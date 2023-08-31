@@ -1,17 +1,33 @@
+#include "glad/glad.h"
+
 #include "renderer.h"
 #include "utils/error.h"
 #include "structs/vector.h"
 
-#include "glad/glad.h"
-
 static program_t DEFAULT_3D_PROGRAM;
 
-renderer_t renderer_new(int width, int height) {
+int rendering_init(GLFWwindow* window) {
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
+    glfwMakeContextCurrent(window);
+
+    if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+        return -1;
+    }
+
+    return 0;
+}
+
+renderer_t renderer_new(int width, int height) {
     render_pass_t render_pass;
 
     render_pass.default_program = DEFAULT_3D_PROGRAM;
     render_pass.draw_calls = vector_void_new(5);
+    
+    glViewport(0, 0, width, height);
 
     return (renderer_t) {
         .width = width,

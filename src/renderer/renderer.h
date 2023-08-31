@@ -10,6 +10,8 @@
 
 #include "structs/vector.h"
 
+#include <GLFW/glfw3.h>
+
 typedef struct draw_call_t {
     enum draw_mode { DRAW_CALL_MODE_2D, DRAW_CALL_MODE_3D } mode;
 
@@ -36,6 +38,8 @@ typedef struct renderer_t {
     int width, height;
     render_pass_t render_pass;
 } renderer_t;
+
+int rendering_init(GLFWwindow* window);
 
 renderer_t renderer_new(int width, int height);
 void renderer_update_screen(renderer_t* renderer, int width, int height);

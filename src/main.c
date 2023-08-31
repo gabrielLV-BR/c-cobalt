@@ -1,15 +1,18 @@
 #include <stdio.h>
 #include <stdint.h>
-#include <error.h>
-#include <errno.h>
+
+#include "glad/glad.h"
+#include <GLFW/glfw3.h>
 
 #include "math/matrix.h"
 #include "renderer/mesh.h"
 #include "renderer/shader.h"
 #include "renderer/texture.h"
+#include "renderer/renderer.h"
 
-#include "glad/glad.h"
-#include <GLFW/glfw3.h>
+#include "utils/error.h"
+
+void window_resize_callback(GLFWwindow* window, int width, int height);
 
 int main(void) {
     int WIDTH = 500,
@@ -17,22 +20,19 @@ int main(void) {
     
     const char* TITLE = "Hello";
 
-    printf("HELLO!\n");
-
     if(!glfwInit()) return -1;
 
     GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, TITLE, NULL, NULL);
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
-    glfwMakeContextCurrent(window);
-
-    if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        fprintf(stderr, "Error loading OpenGL!\n");
+    if(!rendering_init(window)) {
+        ERROR("When initializing rendering");
     }
+
+    renderer_t renderer = renderer_new(WIDTH, HEIGHT);
+
+    glfwSetWindowUserPointer(window, &renderer);
+
+    glfwSetWindowSizeCallback(window, window_resize_callback);
 
     shader_t vertex = shader_read_from_file(
         "assets/shaders/basic.vert.glsl", GL_VERTEX_SHADER
@@ -44,8 +44,7 @@ int main(void) {
 
     program_t program = program_new(vertex, fragment);
 
-
-float vertices[] = {
+    float vertices[] = {
         // positions         // texture coords
          0.5f,  0.5f, 0.0f,  1.0f, 1.0f, // top right
          0.5f, -0.5f, 0.0f,  1.0f, 0.0f, // bottom right
@@ -93,7 +92,7 @@ float vertices[] = {
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-    program_print_uniforms(program);
+        program_print_uniforms(program);
 
         glUseProgram(program.handle);
 
@@ -128,4 +127,9 @@ float vertices[] = {
     glfwTerminate();
     
     return 0;
+}
+
+void window_resize_callback(GLFWwindow* window, int width, int height) {
+    renderer_t* renderer = (renderer_t*) glfwGetWindowUserPointer(window);
+    renderer_update_screen(renderer, width, height);
 }
