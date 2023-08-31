@@ -1,7 +1,7 @@
 #if !defined(CAMERA_H)
 #define CAMERA_H
 
-#include "math/vector.h"
+#include "math/vec.h"
 
 enum CAMERA_PROJECTION { PROJECTION_PERSPECTIVE, PROJECTION_ORTHOGRAPHIC };
 

@@ -1,7 +1,7 @@
 #if !defined(TRANSFORM_H)
 #define TRANSFORM_H
 
-#include "vector.h"
+#include "vec.h"
 #include "matrix.h"
 
 typedef struct transform_t {

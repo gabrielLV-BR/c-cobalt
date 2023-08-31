@@ -1,7 +1,7 @@
 #if !defined(MATRIX_H)
 #define MATRIX_H
 
-#include "vector.h"
+#include "vec.h"
 
 typedef struct mat4_t {
     float data[16];

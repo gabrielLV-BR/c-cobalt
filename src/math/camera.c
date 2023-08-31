@@ -1,6 +1,6 @@
 #include "camera.h"
 
-#include "math/vector.h"
+#include "math/vec.h"
 #include "math/matrix.h"
 
 // camera_t camera_new(enum CAMERA_PROJECTION projection, vec3_t position) {
