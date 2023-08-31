@@ -138,19 +138,19 @@ mat4_t mat4_rotate_z(mat4_t mat, float deg) {
 
 
 mat4_t mat4_look_at(const vec3_t* direction, const vec3_t* up, const vec3_t* right, const vec3_t* point) {
-    mat4_t a = {
+    mat4_t a = {{
         right->x, right->y, right->z, 0,
         up->x, up->y, up->z, 0,
         direction->x, direction->y, direction->z, 0,
         0, 0, 0, 1
-    };
+    }};
 
-    mat4_t b = {
+    mat4_t b = {{
         1, 0, 0, -point->x,
         0, 1, 0, -point->y,
         0, 0, 1, -point->z,
         0, 0, 0, 1
-    };
+    }};
 
     return mat4_multiply(a, b);
 }

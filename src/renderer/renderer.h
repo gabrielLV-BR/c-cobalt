@@ -8,6 +8,8 @@
 #include "model.h"
 #include "shader.h"
 
+#include "structs/vector.h"
+
 typedef struct draw_call_t {
     enum draw_mode { DRAW_CALL_MODE_2D, DRAW_CALL_MODE_3D } mode;
 
@@ -24,8 +26,7 @@ typedef struct draw_call_t {
 typedef struct render_pass_t {
     program_t default_program;
     mat4_t projection_matrix, view_matrix;
-    draw_call_t* draw_calls;
-    int draw_call_count;
+    vector_void_t draw_calls;
 } render_pass_t;
 
 //

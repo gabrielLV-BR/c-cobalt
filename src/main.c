@@ -89,13 +89,7 @@ float vertices[] = {
 
         // printf("%lf\n", delta);
 
-        mat4_t out = {0};
-
-        mat4_rotate_x(
-            &model_matrix, (float)delta / 100.0f, &out
-        );
-
-        model_matrix = out;
+        model_matrix = mat4_rotate_x(model_matrix, delta / 100.0);
 
         glClear(GL_COLOR_BUFFER_BIT);
 
@@ -109,7 +103,6 @@ float vertices[] = {
         program_set_matrix(program, "uModel", model_matrix);
         program_set_matrix(program, "uView", view_matrix);
         program_set_matrix(program, "uProjection", projection_matrix);
-
 
         glBindVertexArray(mesh.vao);
 

@@ -1,5 +1,5 @@
-#if !defined(VECTOR_H)
-#define VECTOR_H
+#if !defined(VEC_H)
+#define VEC_H
 
 typedef struct vec3_t {
     float x, y, z;
@@ -24,4 +24,4 @@ vec3_t vec3_normalize(vec3_t vec);
 vec3_t vec3_scaled(vec3_t vec, float scalar);
 vec3_t vec3_cross(vec3_t a, vec3_t b);
 
-#endif // VECTOR_H
+#endif // VEC_H
