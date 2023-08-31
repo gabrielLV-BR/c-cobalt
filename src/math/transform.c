@@ -2,7 +2,7 @@
 
 #include "matrix.h"
 
-mat4_t transform_to_mat(transform_t* transform) {
+mat4_t transform_get_model_matrix(transform_t* transform) {
     //TODO rotate this mf
     return (mat4_t) {
         transform->scale.x, 0, 0, transform->position.x,

@@ -8,9 +8,8 @@ enum CAMERA_PROJECTION { PROJECTION_PERSPECTIVE, PROJECTION_ORTHOGRAPHIC };
 typedef struct camera_t {
     enum CAMERA_PROJECTION projection;
     vec3_t position, target;
+    float fov, near_plane, far_plane;
 } camera_t;
-
-camera_t camera_new(enum CAMERA_PROJECTION projection, vec3_t position);
 
 void camera_look_at(camera_t* camera, vec3_t point);
 

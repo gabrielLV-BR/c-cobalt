@@ -3,13 +3,13 @@
 #include "math/vector.h"
 #include "math/matrix.h"
 
-camera_t camera_new(enum CAMERA_PROJECTION projection, vec3_t position) {
-    return (camera_t) {
-        .projection = projection,
-        .position = position,
-        .target = vec3_zero(),
-    };
-}
+// camera_t camera_new(enum CAMERA_PROJECTION projection, vec3_t position) {
+//     return (camera_t) {
+//         .projection = projection,
+//         .position = position,
+//         .target = vec3_zero(),
+//     };
+// }
 
 void camera_look_at(camera_t* camera, vec3_t point) {
     // look at

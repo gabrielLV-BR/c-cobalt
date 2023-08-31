@@ -9,6 +9,6 @@ typedef struct transform_t {
 } transform_t;
 
 
-mat4_t transform_to_mat(transform_t* transform);
+mat4_t transform_get_model_matrix(transform_t* transform);
 
 #endif // TRANSFORM_H
