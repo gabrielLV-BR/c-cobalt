@@ -17,24 +17,28 @@ mat4_t mat4_identity() {
     };
 }
 
-void mat4_multiply(mat4_t* a, mat4_t* b, mat4_t* out) {
+mat4_t mat4_multiply(mat4_t a, mat4_t b) {
+    mat4_t result = {0};
+
     for(int i = 0; i < 4; i++) {
         for(int j = 0; j < 4; j++) {
             float total = 0;
 
             for(int k = 0; k < 4; k++) 
-                total += b->data[i + k * 4] * a->data[k + j * 4];
+                total += b.data[i + k * 4] * a.data[k + j * 4];
 
-            out->data[i + j * 4] = total;
+            result.data[i + j * 4] = total;
         }
     }
+
+    return result;
 }
 
-void mat4_print(mat4_t* mat) {
+void mat4_print(mat4_t mat) {
     printf("Matrix:\n");
     for(int i = 0; i < 4; i++) {
         for(int j = 0; j < 4; j++) {
-            printf("%.1f ", mat->data[i + j * 4]);
+            printf("%.1f ", mat.data[i + j * 4]);
         }
         printf("\n");
     }
@@ -57,17 +61,20 @@ mat4_t mat4_perspective(float fov, float aspect, float near, float far) {
     return perspective_matrix;
 }
 
-void mat4_rotate(mat4_t* mat, vec3_t* direction, float ammount, mat4_t* out) {
+mat4_t mat4_rotate(mat4_t mat, vec3_t direction, float ammount) {
     printf("[mat4_rotate] Not implemented!\m");
+    return mat;
 }
 
-void mat4_translate(mat4_t* mat, vec3_t* velocity) {
-    mat->data[4] += velocity->x;
-    mat->data[8] += velocity->y;
-    mat->data[12] += velocity->z;
+mat4_t mat4_translate(mat4_t mat, vec3_t velocity) {
+    mat.data[4] += velocity.x;
+    mat.data[8] += velocity.y;
+    mat.data[12] += velocity.z;
+
+    return mat;
 }
 
-void mat4_rotate_x(mat4_t* mat, float deg, mat4_t* out) {
+mat4_t mat4_rotate_x(mat4_t mat, float deg) {
     /*
         1 0 0 0
         0 cos -sen 0
@@ -85,10 +92,10 @@ void mat4_rotate_x(mat4_t* mat, float deg, mat4_t* out) {
         0, 0, 0, 1, 
     };
 
-    return mat4_multiply(&rotation_matrix, mat, out);
+    return mat4_multiply(rotation_matrix, mat);
 }
 
-void mat4_rotate_y(mat4_t* mat, float deg, mat4_t* out) {
+mat4_t mat4_rotate_y(mat4_t mat, float deg) {
     /*
         cos  0  sen  0
         0    1  0    0
@@ -106,10 +113,10 @@ void mat4_rotate_y(mat4_t* mat, float deg, mat4_t* out) {
         0, 0, 0, 1, 
     };
 
-    return mat4_multiply(&rotation_matrix, mat, out);
+    return mat4_multiply(rotation_matrix, mat);
 }
 
-void mat4_rotate_z(mat4_t* mat, float deg, mat4_t* out) {     
+mat4_t mat4_rotate_z(mat4_t mat, float deg) {     
     /*   cos  sin  0  0
         -sin  cos  0  0
          0    0    1  0
@@ -126,5 +133,24 @@ void mat4_rotate_z(mat4_t* mat, float deg, mat4_t* out) {
         0, 0, 0, 1, 
     };
 
-    return mat4_multiply(&rotation_matrix, mat, out);
+    return mat4_multiply(rotation_matrix, mat);
+}
+
+
+mat4_t mat4_look_at(const vec3_t* direction, const vec3_t* up, const vec3_t* right, const vec3_t* point) {
+    mat4_t a = {
+        right->x, right->y, right->z, 0,
+        up->x, up->y, up->z, 0,
+        direction->x, direction->y, direction->z, 0,
+        0, 0, 0, 1
+    };
+
+    mat4_t b = {
+        1, 0, 0, -point->x,
+        0, 1, 0, -point->y,
+        0, 0, 1, -point->z,
+        0, 0, 0, 1
+    };
+
+    return mat4_multiply(a, b);
 }

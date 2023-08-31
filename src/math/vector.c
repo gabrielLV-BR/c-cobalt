@@ -10,11 +10,29 @@ vec3_t vec3_new(float x, float y, float z) {
     };
 }
 
+vec3_t vec3_zero() {
+    return (vec3_t) {0};
+}
+
+vec3_t vec3_one() {
+    return (vec3_t) { 1.0, 1.0, 1.0 };
+}
+
+//
+
+vec3_t vec3_add(vec3_t a, vec3_t b) {
+    return (vec3_t) { a.x + b.x, a.y + b.y, a.z + b.z };
+}
+
+vec3_t vec3_sub(vec3_t a, vec3_t b) {
+    return (vec3_t) { a.x - b.x, a.y - b.y, a.z - b.z };
+}
+
 float vec3_magnitude(vec3_t vec) {
     return sqrt(vec.x * vec.x + vec.y * vec.y);
 }
 
-vec3_t vec3_normalized(vec3_t vec) {
+vec3_t vec3_normalize(vec3_t vec) {
     float mag = vec3_magnitude(vec);
 
     if(mag == 0.0f) return vec;
