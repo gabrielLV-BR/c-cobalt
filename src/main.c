@@ -5,7 +5,9 @@
 #include <GLFW/glfw3.h>
 
 #include "math/matrix.h"
+#include "math/camera.h"
 #include "renderer/mesh.h"
+#include "renderer/model.h"
 #include "renderer/shader.h"
 #include "renderer/texture.h"
 #include "renderer/renderer.h"
@@ -68,9 +70,22 @@ int main(void) {
     
     //
 
+    camera_t camera;
+    camera.fov = 80;
+    camera.far_plane = 1000;
+    camera.near_plane = 0.1;
+    camera.position = (vec3_t){0, 1, 2};
+    camera.target = (vec3_t){0, 0, 0};
+    camera.projection = PROJECTION_PERSPECTIVE;
+
     mat4_t model_matrix = mat4_identity();
     mat4_t view_matrix = mat4_identity();
     mat4_t projection_matrix = mat4_identity();
+
+    model_t model;
+    model.meshes = &mesh; 
+    model.num_meshes = 1;
+    model.transform = transform_identity();
 
     double now = glfwGetTime();
     double last_time = now;
@@ -103,6 +118,11 @@ int main(void) {
         program_set_matrix(program, "uView", view_matrix);
         program_set_matrix(program, "uProjection", projection_matrix);
 
+        renderer_begin_rendering(&renderer, &camera);
+
+        renderer_render_model(&renderer, &model);
+
+        renderer_end_rendering(&renderer);
         glBindVertexArray(mesh.vao);
 
         glDrawElements(

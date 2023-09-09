@@ -74,6 +74,13 @@ mat4_t mat4_translate(mat4_t mat, vec3_t velocity) {
     return mat;
 }
 
+mat4_t mat4_scale(mat4_t mat, vec3_t scale) {
+
+    mat.data[0] *= scale.x;
+
+    return mat;
+}
+
 mat4_t mat4_rotate_x(mat4_t mat, float deg) {
     /*
         1 0 0 0

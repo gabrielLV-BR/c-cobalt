@@ -16,6 +16,7 @@ mat4_t mat4_perspective(float fov, float aspect, float near, float far);
 
 mat4_t mat4_translate(mat4_t mat, vec3_t velocity);
 mat4_t mat4_rotate(mat4_t mat, vec3_t direction, float ammount);
+mat4_t mat4_scale(mat4_t mat, vec3_t scale);
 
 mat4_t mat4_rotate_x(mat4_t mat, float deg);
 mat4_t mat4_rotate_y(mat4_t mat, float deg);

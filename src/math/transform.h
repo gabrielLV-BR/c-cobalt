@@ -9,6 +9,7 @@ typedef struct transform_t {
 } transform_t;
 
 
+transform_t transform_identity();
 mat4_t transform_get_model_matrix(transform_t* transform);
 
 #endif // TRANSFORM_H
