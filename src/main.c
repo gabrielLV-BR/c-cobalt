@@ -118,11 +118,6 @@ int main(void) {
         program_set_matrix(program, "uView", view_matrix);
         program_set_matrix(program, "uProjection", projection_matrix);
 
-        renderer_begin_rendering(&renderer, &camera);
-
-        renderer_render_model(&renderer, &model);
-
-        renderer_end_rendering(&renderer);
         glBindVertexArray(mesh.vao);
 
         glDrawElements(
