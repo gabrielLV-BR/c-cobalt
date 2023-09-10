@@ -19,5 +19,6 @@ typedef struct material_t {
 
 material_t material_load_from_file(const char* path);
 void material_bind(program_t* program, material_t* material);
+void material_destroy(material_t material);
 
 #endif // MATERIAL_H

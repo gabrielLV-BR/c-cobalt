@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <string.h>
 
 #include "error.h"
 
@@ -49,4 +50,17 @@ EXIT:
     fclose(file);
 
     return file_size;
+}
+
+int get_file_dir(const char* path, char** buff) {
+    int root_path_len = strlen(path);
+
+    for(; path[root_path_len] != '/' ; root_path_len--);
+    // to include the last slash
+    root_path_len++;
+
+    *buff = calloc(sizeof (char), root_path_len);
+    strncpy(*buff, path, root_path_len);
+
+    return root_path_len;
 }

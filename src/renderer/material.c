@@ -16,22 +16,21 @@ void material_bind(program_t* program, material_t* material) {
 }
 
 material_t material_load_from_file(const char* path) {
+    material_t material;
+
+    char* root_path;
+    int root_path_len;
+
     char* source;
     long source_size = read_from_file(path, &source);
 
     if(source_size == -1) {
-        return (material_t){0};
+        goto EXIT;
     }
 
     // extract dir in path
 
-    int root_path_len = strlen(path);
-    for(; path[root_path_len] != "/" ; root_path_len--);
-    // to include the last slash
-    root_path_len++;
-
-    char root_path[root_path_len];
-    strncpy(root_path, path, root_path_len);
+    root_path_len = get_file_dir(path, *root_path);
 
     // leave some space for the necessary maps
     texture_t textures[5];
@@ -39,10 +38,10 @@ material_t material_load_from_file(const char* path) {
 
     //TODO load other textures
     char* map_Kd = strstr(source, "map_Kd");
+    
     if(map_Kd != NULL) {
         // load diffuse map
         char* diffuse_map_path;
-    
         char* start = map_Kd + 7;
         
         int diffuse_map_len = 0;
@@ -56,9 +55,10 @@ material_t material_load_from_file(const char* path) {
         strncat(diffuse_map_path, start, diffuse_map_len);
 
         textures[texture_count++] = texture_load_from_file(diffuse_map_path);
+
+        free(diffuse_map_path);
     }
 
-    material_t material;
     // TODO read color from material
     material.color = (vec3_t){0, 0, 0};
     material.map_count = texture_count;
@@ -67,5 +67,14 @@ material_t material_load_from_file(const char* path) {
     for(int i = 0; i < texture_count; i++)
         material.maps[i] = textures[i];
 
+EXIT:
+
+    free(source);
+    free(root_path);
+
     return material;
+}
+
+void material_destroy(material_t material) {
+    free(material.maps);
 }
