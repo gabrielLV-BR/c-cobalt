@@ -21,4 +21,6 @@ void texture_destroy(texture_t* texture);
 void texture_bind(texture_t* texture, enum TEXTURE_UNIT unit);
 void texture_unbind(texture_t* texture);
 
+const char* texture_get_name(enum MATERIAL_TEXTURE_INDEX index);
+
 #endif // TEXTURE_H

@@ -1,4 +1,5 @@
 #include "texture.h"
+#include "material.h"
 #include "utils/error.h"
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -74,4 +75,16 @@ void texture_bind(texture_t* texture, enum TEXTURE_UNIT unit) {
 
 void texture_unbind(texture_t* texture) {
     glBindTexture(GL_TEXTURE_2D, 0);
+}
+
+const char* material_get_texture_name(enum MATERIAL_TEXTURE_INDEX index) {
+    switch(index) {
+        case 0:
+            return "uDiffuseTexture";
+        case 1:
+            return "uNormalTexture";
+        default: 
+            ERROR("When getting texture name");
+            return NULL;
+    }
 }

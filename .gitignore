@@ -1,7 +1,9 @@
 .vscode/
+build/
 
 **/*.o
+vendor/*/*
+
+assets/models/*
 
 game
-
-vendor/*/*
