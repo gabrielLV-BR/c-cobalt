@@ -37,7 +37,8 @@ mesh_t mesh_new(float* vertices, int vertex_count, uint32_t* indices, int index_
         .vertices = vertices,
         .vertex_count = vertex_count,
         .indices = indices,
-        .index_count = index_count
+        .index_count = index_count,
+        .material = {0}
     };
     
 }
