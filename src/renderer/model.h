@@ -1,13 +1,18 @@
 #if !defined(MODEL_H)
 #define MODEL_H
 
+#include <stdint.h>
+
 #include "mesh.h"
 #include "material.h"
 #include "math/transform.h"
 
 typedef struct model_t {
-    mesh_t* meshes;
-    int num_meshes;
+    uint32_t* mesh_handles;
+    uint32_t mesh_handle_count;
+
+    uint32_t* material_handles;
+    uint32_t material_handle_count;
 
     transform_t transform;
 } model_t;

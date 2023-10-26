@@ -6,11 +6,6 @@
 #include <string.h>
 
 model_t model_new(mesh_t* meshes, int num_meshes, transform_t transform) {
-    return (model_t) {
-        .meshes = meshes,
-        .num_meshes = num_meshes,
-        .transform = transform
-    };
 }
 
 model_t model_load_from_file(const char* path) {
@@ -63,5 +58,6 @@ EXIT:
 }
 
 void model_destroy(model_t* model) {
-    free(model->meshes);
+    free(model->mesh_handles);
+    free(model->material_handles);
 }

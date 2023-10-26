@@ -1,7 +1,7 @@
 CC:=gcc
 
 CFLAGS=-g -Wall -I"$(CURDIR)/src/"
-LDFLAGS=-lc -ldl -lm -DNDEBUG
+LDFLAGS=-lc -ldl -lm -DNDEBUG -lX11
 
 SOURCES:=$(wildcard src/**/*.c src/*.c)
 
