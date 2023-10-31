@@ -30,7 +30,7 @@ material_t material_load_from_file(const char* path) {
 
     // extract dir in path
 
-    root_path_len = get_file_dir(path, *root_path);
+    root_path_len = get_file_dir(path, &root_path);
 
     // leave some space for the necessary maps
     texture_t textures[5];

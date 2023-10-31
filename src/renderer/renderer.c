@@ -69,7 +69,7 @@ renderer_t renderer_new(int width, int height, const char* title) {
         goto END;
     }
 
-    if(!__renderer_init_opengl(window)) {
+    if(__renderer_init_opengl(window) != 0) {
         ERROR("When loading OpenGL");
         goto END;
     }
@@ -111,7 +111,9 @@ void renderer_render(renderer_t* renderer, scene_t* scene, camera_t* camera) {
         model_t* model = scene->models.data[i];
 
         for(int j = 0; j < model->mesh_handle_count; j++) {
-            mesh_t* mesh = model->mesh_handles[j];
+            uint32_t mesh_handle = model->mesh_handles[j];
+
+            mesh_t* mesh = (mesh_t*) scene->meshes.data[mesh_handle];
 
             __renderer_bind_material(renderer, &mesh->material);
 
