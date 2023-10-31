@@ -3,15 +3,19 @@
 
 #include "mesh.h"
 #include "model.h"
+#include "shader.h"
 
 #include "math/camera.h"
 #include "scene/scene.h"
 
 #include <GLFW/glfw3.h>
 
-typedef struct renderer_t {
+typedef struct {
     GLFWwindow* window;
     int width, height;
+
+    int program_count;
+    program_t* programs;
 } renderer_t;
 
 renderer_t renderer_new(int width, int height, const char* title);

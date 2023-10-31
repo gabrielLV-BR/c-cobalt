@@ -1,21 +1,27 @@
-#if !defined(SCENE_H)
-#define SCENE_H
+#ifndef __scene_h__
+#define __scene_h__
 
 #include "renderer/mesh.h"
 #include "renderer/model.h"
+#include "renderer/texture.h"
 #include "renderer/material.h"
+
+#include "structs/vector.h"
 
 #include <stdint.h>
 
 typedef struct {
-    mesh_t* meshes;
-    uint32_t mesh_count;
-
-    material_t* materials;
-    uint32_t material_count;
-
-    model_t* models;
-    uint32_t model_count;
+    vector_void_t meshes;
+    vector_void_t materials;
+    vector_void_t models;
 } scene_t;
 
-#endif // SCENE_H
+scene_t scene_new();
+scene_t scene_load_from_file(const char* path);
+
+uint32_t scene_load_mesh(scene_t* scene, mesh_t* mesh);
+uint32_t scene_load_material(scene_t* scene, material_t* texture);
+
+uint32_t scene_add_model(scene_t* scene, model_t* model);
+
+#endif // __scene_h__
