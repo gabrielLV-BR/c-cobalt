@@ -1,11 +1,13 @@
 .vscode/
-build/
-
 .xmake/
 
+game
+cobalt
+
+*.out
 **/*.o
 vendor/*/*
 
-assets/models/*
+build/
 
-game
+assets/models/*
