@@ -30,3 +30,9 @@ uint32_t scene_add_model(scene_t* scene, model_t* model) {
     vector_void_append(&scene->models, (void*)model);
     return scene->models.length - 1;
 }
+
+void scene_destroy(scene_t* scene) {
+    vector_void_destroy(&scene->meshes);
+    vector_void_destroy(&scene->models);
+    vector_void_destroy(&scene->materials);
+}

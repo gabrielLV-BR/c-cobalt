@@ -23,4 +23,6 @@ void renderer_update_screen(renderer_t* renderer, int width, int height);
 
 void renderer_render(renderer_t* renderer, scene_t* scene, camera_t* camera);
 
+void renderer_destroy(renderer_t* renderer);
+
 #endif // RENDERER_H

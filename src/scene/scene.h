@@ -24,4 +24,6 @@ uint32_t scene_load_material(scene_t* scene, material_t* texture);
 
 uint32_t scene_add_model(scene_t* scene, model_t* model);
 
+void scene_destroy(scene_t* scene);
+
 #endif // __scene_h__
