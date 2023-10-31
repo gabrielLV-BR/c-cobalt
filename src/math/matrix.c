@@ -62,7 +62,7 @@ mat4_t mat4_perspective(float fov, float aspect, float near, float far) {
 }
 
 mat4_t mat4_rotate(mat4_t mat, vec3_t direction, float ammount) {
-    printf("[mat4_rotate] Not implemented!\m");
+    printf("[mat4_rotate] Not implemented!\n");
     return mat;
 }
 

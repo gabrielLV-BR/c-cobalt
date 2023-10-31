@@ -1,5 +1,7 @@
 #include "mesh.h"
 
+#include <stdlib.h>
+
 #include "glad/glad.h"
 
 mesh_t mesh_new(float* vertices, int vertex_count, uint32_t* indices, int index_count) {
@@ -20,10 +22,10 @@ mesh_t mesh_new(float* vertices, int vertex_count, uint32_t* indices, int index_
     int uv_offset = 3 * sizeof (float);
     int stride = 5 * sizeof (float);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)vertex_offset);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)&vertex_offset);
     glEnableVertexAttribArray(0);
     
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*)uv_offset);
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*)&uv_offset);
     glEnableVertexAttribArray(1);
 
     glBindBuffer(GL_ARRAY_BUFFER, 0);
