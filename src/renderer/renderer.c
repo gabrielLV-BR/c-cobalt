@@ -101,6 +101,8 @@ void __renderer_bind_material(renderer_t* renderer, material_t* material) {
 
     program_t program = renderer->programs[material_program];
 
+    glUseProgram(program.handle);
+
     for(int i = 0; i < material->map_count; i++) {
         program_set_texture_unit(program, texture_unit_name(i), i);
     }

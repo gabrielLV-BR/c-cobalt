@@ -3,8 +3,8 @@
 in vec2 aUV;
 out vec4 outColor;
 
-uniform sampler2D texture1;
+uniform sampler2D uDiffuseTexture;
 
 void main() {
-    outColor = texture(texture1, aUV);
+    outColor = texture(uDiffuseTexture, aUV);
 }

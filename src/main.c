@@ -82,10 +82,15 @@ int main(void) {
     mat4_t view_matrix = mat4_identity();
     mat4_t projection_matrix = mat4_identity();
 
-    model_t model;
-    // model.meshes = &mesh; 
-    // model.num_meshes = 1;
-    model.transform = transform_identity();
+    scene_t scene = scene_new();
+
+    model_t model = {
+        .mesh_handle_count = 1,
+        .mesh_handles = {scene_load_mesh(&scene, &mesh)},
+        .transform = transform_identity()
+    };
+
+    scene_add_model(&scene, &model);
 
     double now = glfwGetTime();
     double last_time = now;
@@ -107,36 +112,18 @@ int main(void) {
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        debug__program_print_uniforms(program);
-
-        glUseProgram(program.handle);
-
-        texture_bind(&texture, TEXTURE_UNIT_DIFFUSE);
-
-        program_set_texture_unit(program, "texture1", TEXTURE_UNIT_DIFFUSE);
-        program_set_matrix(program, "uModel", model_matrix);
-        program_set_matrix(program, "uView", view_matrix);
-        program_set_matrix(program, "uProjection", projection_matrix);
-
-        glBindVertexArray(mesh.vao);
-
-        glDrawElements(
-            GL_TRIANGLES,
-            mesh.index_count,
-            GL_UNSIGNED_INT,
-            mesh.indices
+        renderer_render(
+            &renderer,
+            &scene,
+            &camera
         );
-
-        texture_unbind(&texture);
-        glUseProgram(0);
 
         glfwPollEvents();
         glfwSwapBuffers(renderer.window);
     }
 
-    mesh_destroy(&mesh);
-    texture_destroy(&texture);
-    program_destroy(program);
+    scene_destroy(&scene);
+    renderer_destroy(&renderer);
 
     glfwDestroyWindow(renderer.window);
     glfwTerminate();
