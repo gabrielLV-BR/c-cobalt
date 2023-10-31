@@ -6,10 +6,10 @@
 
 #include "math/vec.h"
 
-enum MATERIAL_TEXTURE_INDEX {
+typedef enum {
     TEXTURE_INDEX_DIFFUSE = 0,
     TEXTURE_INDEX_NORMAL = 1
-};
+} MATERIAL_TEXTURE_INDEX;
 
 typedef struct material_t {
     vec3_t color;

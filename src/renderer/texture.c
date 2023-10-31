@@ -68,7 +68,7 @@ void texture_destroy(texture_t* texture) {
     glDeleteTextures(1, &texture->handle);
 }
 
-void texture_bind(texture_t* texture, enum TEXTURE_UNIT unit) {
+void texture_bind(texture_t* texture, TEXTURE_UNIT unit) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture->handle);
 }
@@ -77,7 +77,7 @@ void texture_unbind(texture_t* texture) {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-const char* material_get_texture_name(enum MATERIAL_TEXTURE_INDEX index) {
+const char* material_get_texture_name(MATERIAL_TEXTURE_INDEX index) {
     switch(index) {
         case 0:
             return "uDiffuseTexture";
@@ -85,6 +85,7 @@ const char* material_get_texture_name(enum MATERIAL_TEXTURE_INDEX index) {
             return "uNormalTexture";
         default: 
             ERROR("When getting texture name");
-            return NULL;
     }
+
+    return NULL;
 }

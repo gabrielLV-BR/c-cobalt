@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-typedef struct scene_t {
+typedef struct {
     mesh_t* meshes;
     uint32_t mesh_count;
 
@@ -16,6 +16,6 @@ typedef struct scene_t {
 
     model_t* models;
     uint32_t model_count;
-};
+} scene_t;
 
 #endif // SCENE_H

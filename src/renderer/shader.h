@@ -23,7 +23,7 @@ program_t program_new(shader_t vertex, shader_t fragment);
 void program_destroy(program_t program);
 
 void program_set_matrix(program_t program, const char* name, mat4_t matrix);
-void program_set_texture_unit(program_t program, const char* name, enum TEXTURE_UNIT unit);
+void program_set_texture_unit(program_t program, const char* name, TEXTURE_UNIT unit);
 
 // debug
 
