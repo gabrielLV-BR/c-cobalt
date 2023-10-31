@@ -1,13 +1,9 @@
-#if !defined(TEXTURE_H)
-#define TEXTURE_H
+#ifndef __texture_h__
+#define __texture_h__
 
 #include <stdint.h>
-#include "material.h"
 
-typedef enum TEXTURE_UNIT {
-    TEXTURE_UNIT_DIFFUSE = 0,
-    TEXTURE_UNIT_NORMAL = 1
-} TEXTURE_UNIT;
+#include "renderer/material.h"
 
 typedef struct {
     uint32_t handle;
@@ -19,9 +15,9 @@ texture_t texture_load_from_file(const char* path);
 uint32_t texture_upload(int width, int height, int channels, unsigned char* data);
 
 void texture_destroy(texture_t* texture);
-void texture_bind(texture_t* texture, TEXTURE_UNIT unit);
+void texture_bind(texture_t* texture, texture_unit_t unit);
 void texture_unbind(texture_t* texture);
 
-const char* texture_get_name(MATERIAL_TEXTURE_INDEX index);
+const char* texture_unit_name(texture_unit_t index);
 
-#endif // TEXTURE_H
+#endif // __texture_h__

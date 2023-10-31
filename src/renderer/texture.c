@@ -1,8 +1,7 @@
-#include "texture.h"
-#include "material.h"
+#include "renderer/texture.h"
+#include "renderer/material.h"
 #include "utils/error.h"
 
-#define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
 #include "glad/glad.h"
 
@@ -68,7 +67,7 @@ void texture_destroy(texture_t* texture) {
     glDeleteTextures(1, &texture->handle);
 }
 
-void texture_bind(texture_t* texture, TEXTURE_UNIT unit) {
+void texture_bind(texture_t* texture, texture_unit_t unit) {
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture->handle);
 }
@@ -77,7 +76,7 @@ void texture_unbind(texture_t* texture) {
     glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-const char* material_get_texture_name(MATERIAL_TEXTURE_INDEX index) {
+const char* texture_unit_name(texture_unit_t index) {
     switch(index) {
         case 0:
             return "uDiffuseTexture";

@@ -1,9 +1,8 @@
-#if !defined(SHADER_H)
-#define SHADER_H
+#ifndef __shader_h__
+#define __shader_h__
 
 #include <stdint.h>
 
-#include "renderer/texture.h"
 #include "math/matrix.h"
 
 typedef struct shader_t {
@@ -23,10 +22,10 @@ program_t program_new(shader_t vertex, shader_t fragment);
 void program_destroy(program_t program);
 
 void program_set_matrix(program_t program, const char* name, mat4_t matrix);
-void program_set_texture_unit(program_t program, const char* name, TEXTURE_UNIT unit);
+void program_set_texture_unit(program_t program, const char* name, uint32_t unit);
 
 // debug
 
 void program_print_uniforms(program_t program);
 
-#endif // SHADER_H
+#endif // __shader_h__

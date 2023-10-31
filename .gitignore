@@ -1,6 +1,8 @@
 .vscode/
 build/
 
+.xmake/
+
 **/*.o
 vendor/*/*
 

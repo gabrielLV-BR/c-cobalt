@@ -1,5 +1,5 @@
-#include "material.h"
-#include "texture.h"
+#include "renderer/material.h"
+#include "renderer/texture.h"
 
 #include "glad/glad.h"
 #include "utils/error.h"
@@ -11,7 +11,7 @@
 
 void material_bind(program_t* program, material_t* material) {
     for(int i = 0; i < material->map_count; i++) {
-        program_set_texture_unit(*program, material_get_texture_name(i), i);
+        program_set_texture_unit(*program, texture_unit_name(i), i);
     }
 }
 
@@ -64,8 +64,8 @@ material_t material_load_from_file(const char* path) {
     material.map_count = texture_count;
     material.maps = calloc(sizeof(material_t), texture_count);
 
-    for(int i = 0; i < texture_count; i++)
-        material.maps[i] = textures[i];
+    // for(int i = 0; i < texture_count; i++)
+    //     material.maps[i] = textures[i];
 
 EXIT:
 

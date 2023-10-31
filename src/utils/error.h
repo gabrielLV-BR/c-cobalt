@@ -3,8 +3,8 @@
 
 #include <stdio.h>
 
-#define ERROR(x) {perror(x);}
+#define ERROR(x) { printf("[ERROR] On %s:%s\n\t%s", __FILE__, __LINE__, x); perror(x); };
 
-#define WARNING(x) {printf("[WARNING] %s\n", x);};
+#define WARNING(x) { printf("[WARNING] %s\n", x); };
 
 #endif // ERROR_H

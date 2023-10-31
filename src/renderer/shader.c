@@ -111,7 +111,7 @@ void program_set_matrix(program_t program, const char* name, mat4_t matrix) {
     glUniformMatrix4fv(location, 1, GL_FALSE, matrix.data);
 }
 
-void program_set_texture_unit(program_t program, const char* name, enum TEXTURE_UNIT unit) {
+void program_set_texture_unit(program_t program, const char* name, uint32_t unit) {
     int location = glGetUniformLocation(program.handle, name);
 
     if(location == -1) {

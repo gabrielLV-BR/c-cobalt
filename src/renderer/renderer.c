@@ -4,27 +4,36 @@
 
 #include "utils/error.h"
 
-int rendering_init(GLFWwindow* window) {
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+renderer_t renderer_new(int width, int height, const char* title) {
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
+    GLFWwindow* window = glfwCreateWindow(width, height, title, 0, 0);
+
+    if(window == NULL) {
+        ERROR("When creating GLFW window");
+        goto END;
+    }
 
     glfwMakeContextCurrent(window);
 
     if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-        return -1;
+        ERROR("When loading OpenGL");
+
+        window = NULL;
+
+        goto END;
     }
 
-    return 0;
-}
-
-renderer_t renderer_new(int width, int height) {
     glViewport(0, 0, width, height);
+
+END:
 
     return (renderer_t) {
         .width = width,
         .height = height,
+        .window = window
     };
 }
 

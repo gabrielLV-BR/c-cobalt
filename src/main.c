@@ -11,8 +11,8 @@
 #include "renderer/shader.h"
 #include "renderer/texture.h"
 #include "renderer/renderer.h"
-
 #include "utils/error.h"
+
 
 void window_resize_callback(GLFWwindow* window, int width, int height);
 
@@ -22,19 +22,19 @@ int main(void) {
     
     const char* TITLE = "Hello";
 
-    if(!glfwInit()) return -1;
-
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, TITLE, NULL, NULL);
-
-    if(!rendering_init(window)) {
-        ERROR("When initializing rendering");
+    if(!glfwInit()) {
+        return -1;
     }
 
-    renderer_t renderer = renderer_new(WIDTH, HEIGHT);
+    renderer_t renderer = renderer_new(WIDTH, HEIGHT, TITLE);
 
-    glfwSetWindowUserPointer(window, &renderer);
+    if(renderer.window == NULL) {
+        return -1;
+    }
 
-    glfwSetWindowSizeCallback(window, window_resize_callback);
+    glfwSetWindowUserPointer(renderer.window, &renderer);
+
+    glfwSetWindowSizeCallback(renderer.window, window_resize_callback);
 
     shader_t vertex = shader_read_from_file(
         "assets/shaders/basic.vert.glsl", GL_VERTEX_SHADER
@@ -83,8 +83,8 @@ int main(void) {
     mat4_t projection_matrix = mat4_identity();
 
     model_t model;
-    model.meshes = &mesh; 
-    model.num_meshes = 1;
+    // model.meshes = &mesh; 
+    // model.num_meshes = 1;
     model.transform = transform_identity();
 
     double now = glfwGetTime();
@@ -93,7 +93,7 @@ int main(void) {
 
     double accum = 0.0;
 
-    while(!glfwWindowShouldClose(window)) {
+    while(!glfwWindowShouldClose(renderer.window)) {
 
         now = glfwGetTime();
         delta = now - last_time;
@@ -131,14 +131,14 @@ int main(void) {
         glUseProgram(0);
 
         glfwPollEvents();
-        glfwSwapBuffers(window);
+        glfwSwapBuffers(renderer.window);
     }
 
     mesh_destroy(&mesh);
     texture_destroy(&texture);
     program_destroy(program);
 
-    glfwDestroyWindow(window);
+    glfwDestroyWindow(renderer.window);
     glfwTerminate();
     
     return 0;
