@@ -10,10 +10,6 @@
 typedef struct model_t {
     uint32_t* mesh_handles;
     uint32_t mesh_handle_count;
-
-    uint32_t* material_handles;
-    uint32_t material_handle_count;
-
     transform_t transform;
 } model_t;
 

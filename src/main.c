@@ -20,7 +20,7 @@ int main(void) {
     int WIDTH = 500,
         HEIGHT = 500;
     
-    const char* TITLE = "Hello";
+    const char* TITLE = "OpenGL Window";
 
     if(!glfwInit()) {
         return -1;
@@ -107,7 +107,7 @@ int main(void) {
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        program_print_uniforms(program);
+        debug__program_print_uniforms(program);
 
         glUseProgram(program.handle);
 

@@ -59,5 +59,4 @@ EXIT:
 
 void model_destroy(model_t* model) {
     free(model->mesh_handles);
-    free(model->material_handles);
 }

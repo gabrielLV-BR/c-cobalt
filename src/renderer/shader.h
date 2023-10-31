@@ -26,6 +26,6 @@ void program_set_texture_unit(program_t program, const char* name, uint32_t unit
 
 // debug
 
-void program_print_uniforms(program_t program);
+void debug__program_print_uniforms(program_t program);
 
 #endif // __shader_h__

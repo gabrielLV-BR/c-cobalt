@@ -32,7 +32,7 @@ int shader_check_for_errors(uint32_t shader, uint32_t shader_type) {
     return 0;
 }
 
-int program_check_for_errors(uint32_t program) {
+int __program_check_for_errors(uint32_t program) {
     int link_status;
 
     glGetProgramiv(program, GL_LINK_STATUS, &link_status);
@@ -46,6 +46,8 @@ int program_check_for_errors(uint32_t program) {
 
         glGetProgramInfoLog(program, len, NULL, info_log);
         fprintf(stderr, "Error linking program: %s\n", info_log);
+
+        ERROR("When linking program");
 
         free(info_log);
 
@@ -63,12 +65,9 @@ shader_t shader_new(const char* source, uint32_t shader_type) {
 
     if(shader_check_for_errors(shader, shader_type)) {
         ERROR("When compiling shader");
-        //TODO don't
-        exit(1);
     }
 
     return (shader_t) {.handle = shader};
-    
 }
 
 shader_t shader_read_from_file(const char* path, uint32_t shader_type) {
@@ -86,7 +85,7 @@ program_t program_new(shader_t vertex, shader_t fragment) {
     glAttachShader(program, fragment.handle);
     glLinkProgram(program);
 
-    if(program_check_for_errors(program)) {
+    if(__program_check_for_errors(program)) {
         ERROR("When linking program");
         //TODO don't
         exit(-1);
@@ -149,7 +148,7 @@ const char* __get_name_for_type(GLenum type) {
     }
 }
 
-void program_print_uniforms(program_t program) {
+void debug__program_print_uniforms(program_t program) {
     int count;
     glGetProgramiv(program.handle, GL_ACTIVE_ATTRIBUTES, &count);
 
