@@ -12,7 +12,7 @@ typedef enum {
 
 typedef struct {
     vec3_t color;
-    uint32_t* maps;
+    uint32_t* map_handles;
     int map_count;
 } material_t;
 

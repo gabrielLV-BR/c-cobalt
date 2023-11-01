@@ -62,7 +62,7 @@ material_t material_load_from_file(const char* path) {
     // TODO read color from material
     material.color = (vec3_t){0, 0, 0};
     material.map_count = texture_count;
-    material.maps = calloc(sizeof(material_t), texture_count);
+    material.map_handles = calloc(sizeof(material_t), texture_count);
 
     // for(int i = 0; i < texture_count; i++)
     //     material.maps[i] = textures[i];
@@ -76,5 +76,5 @@ EXIT:
 }
 
 void material_destroy(material_t material) {
-    free(material.maps);
+    free(material.map_handles);
 }

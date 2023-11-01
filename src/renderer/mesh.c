@@ -4,7 +4,13 @@
 
 #include "glad/glad.h"
 
-mesh_t mesh_new(float* vertices, int vertex_count, uint32_t* indices, int index_count) {
+mesh_t mesh_new(
+    float* vertices, 
+    int vertex_count, 
+    uint32_t* indices, 
+    int index_count, 
+    uint32_t material_handle
+) {
     uint32_t vao, vbo, ebo;
 
     glGenVertexArrays(1, &vao);
@@ -28,9 +34,9 @@ mesh_t mesh_new(float* vertices, int vertex_count, uint32_t* indices, int index_
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*)&uv_offset);
     glEnableVertexAttribArray(1);
 
+    glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glBindVertexArray(0);
 
     return (mesh_t) {
         .vao = vao,
@@ -40,7 +46,7 @@ mesh_t mesh_new(float* vertices, int vertex_count, uint32_t* indices, int index_
         .vertex_count = vertex_count,
         .indices = indices,
         .index_count = index_count,
-        .material = {0}
+        .material_handle = material_handle
     };
     
 }

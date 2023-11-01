@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <stdint.h>
 
 #include "glad/glad.h"
@@ -11,8 +12,9 @@
 #include "renderer/shader.h"
 #include "renderer/texture.h"
 #include "renderer/renderer.h"
-#include "utils/error.h"
 
+#include "utils/error.h"
+#include "utils/arr.h"
 
 void window_resize_callback(GLFWwindow* window, int width, int height);
 
@@ -36,35 +38,6 @@ int main(void) {
 
     glfwSetWindowSizeCallback(renderer.window, window_resize_callback);
 
-    shader_t vertex = shader_read_from_file(
-        "assets/shaders/basic.vert.glsl", GL_VERTEX_SHADER
-    );
-
-    shader_t fragment = shader_read_from_file(
-        "assets/shaders/basic.frag.glsl", GL_FRAGMENT_SHADER
-    );
-
-    program_t program = program_new(vertex, fragment);
-
-    float vertices[] = {
-        // positions         // texture coords
-         0.5f,  0.5f, 0.0f,  1.0f, 1.0f, // top right
-         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f,  0.0f, 1.0f  // top left 
-    };
-
-    uint32_t indices[] = {
-        0, 1, 2,
-        2, 3, 0
-    };
-
-    glCullFace(GL_BACK);
-
-    mesh_t mesh = mesh_new(vertices, sizeof vertices / sizeof(float), indices, sizeof indices / sizeof(uint32_t));
-
-    texture_t texture = texture_load_from_file("assets/textures/chessbloody.png");
-
     glViewport(0, 0, 500, 500);
     glClearColor(0.2, 0.6, 0.9, 1.0);
     
@@ -82,15 +55,58 @@ int main(void) {
     mat4_t view_matrix = mat4_identity();
     mat4_t projection_matrix = mat4_identity();
 
+    //
+
     scene_t scene = scene_new();
+
+    // example model
+
+    // material
+    texture_t texture = texture_load_from_file("assets/textures/chessbloody.png");
+
+    material_t material = {
+        .color = (vec3_t) {1},
+        .map_count = 1,
+        .map_handles = to_uint32_t_array(texture.handle)
+    };
+
+    uint32_t material_handle = scene_load_material(&scene, &material);
+
+    // mesh
+
+    float vertices[] = {
+        // positions         // texture coords
+         0.5f,  0.5f, 0.0f,  1.0f, 1.0f, // top right
+         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, // bottom right
+        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, // bottom left
+        -0.5f,  0.5f, 0.0f,  0.0f, 1.0f  // top left 
+    };
+
+    uint32_t indices[] = {
+        0, 1, 2,
+        2, 3, 0
+    };
+
+
+    mesh_t mesh = mesh_new(
+        vertices, 
+        sizeof vertices / sizeof(float), 
+        indices, 
+        sizeof indices / sizeof(uint32_t),
+        material_handle
+    );
+
+    uint32_t mesh_handle = scene_load_mesh(&scene, &mesh);
 
     model_t model = {
         .mesh_handle_count = 1,
-        .mesh_handles = {scene_load_mesh(&scene, &mesh)},
+        .mesh_handles = to_uint32_t_array(mesh_handle),
         .transform = transform_identity()
     };
 
     scene_add_model(&scene, &model);
+
+    //
 
     double now = glfwGetTime();
     double last_time = now;
@@ -99,14 +115,11 @@ int main(void) {
     double accum = 0.0;
 
     while(!glfwWindowShouldClose(renderer.window)) {
-
         now = glfwGetTime();
         delta = now - last_time;
         last_time = now;
 
         accum += delta;
-
-        // printf("%lf\n", delta);
 
         model_matrix = mat4_rotate_x(model_matrix, delta / 100.0);
 

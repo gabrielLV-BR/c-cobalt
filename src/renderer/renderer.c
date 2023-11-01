@@ -59,7 +59,6 @@ void __renderer_load_default_programs(renderer_t* renderer) {
 }
 
 renderer_t renderer_new(int width, int height, const char* title) {
-
     renderer_t renderer = {0};
     
     GLFWwindow* window = __renderer_init_window(width, height, title);
@@ -109,15 +108,32 @@ void __renderer_bind_material(renderer_t* renderer, material_t* material) {
 }
 
 void renderer_render(renderer_t* renderer, scene_t* scene, camera_t* camera) {
-    for(int i = 0; i < scene->models.length; i++) {
-        model_t* model = scene->models.data[i];
+    mat4_t view_matrix = camera_get_view_matrix(camera);
+    mat4_t perspective_matrix = mat4_identity();
+    mat4_t model_matrix;
 
-        for(int j = 0; j < model->mesh_handle_count; j++) {
-            uint32_t mesh_handle = model->mesh_handles[j];
+    for(int model_index = 0; model_index < scene->models.length; model_index++) {
+        model_t* model = scene->models.data[model_index];
 
+        for(int mesh_index = 0; mesh_index < model->mesh_handle_count; mesh_index++) {
+            uint32_t mesh_handle = model->mesh_handles[mesh_index];
             mesh_t* mesh = (mesh_t*) scene->meshes.data[mesh_handle];
 
-            __renderer_bind_material(renderer, &mesh->material);
+            uint32_t material_handle = mesh->material_handle;
+            material_t* material = (material_t*) scene->materials.data[material_handle];
+
+            model_matrix = transform_get_model_matrix(&model->transform);
+
+            __renderer_bind_material(renderer, material);
+
+            program_t program = renderer->programs[material->map_count - 1];
+
+            program_set_mvp(
+                program, 
+                model_matrix, 
+                view_matrix, 
+                perspective_matrix
+            );
 
             glBindVertexArray(mesh->vao);
 
@@ -125,10 +141,13 @@ void renderer_render(renderer_t* renderer, scene_t* scene, camera_t* camera) {
                 GL_TRIANGLES,
                 mesh->index_count,
                 GL_UNSIGNED_INT,
-                0
+                NULL
             );
         }
     }
+
+    glUseProgram(0);
+    glBindVertexArray(0);
 }
 
 void renderer_destroy(renderer_t* renderer) {

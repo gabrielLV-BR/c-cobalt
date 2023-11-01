@@ -22,6 +22,8 @@ program_t program_new(shader_t vertex, shader_t fragment);
 void program_destroy(program_t program);
 
 void program_set_matrix(program_t program, const char* name, mat4_t matrix);
+void program_set_mvp(program_t program, mat4_t model, mat4_t view, mat4_t proj);
+
 void program_set_texture_unit(program_t program, const char* name, uint32_t unit);
 
 // debug
