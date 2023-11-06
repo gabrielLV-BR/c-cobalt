@@ -1,11 +1,12 @@
 #include "mesh.h"
 
+#include <stdint.h>
 #include <stdlib.h>
 
 #include "glad/glad.h"
 
 mesh_t mesh_new(
-    float* vertices, 
+    vec3_t* vertices, 
     int vertex_count, 
     uint32_t* indices, 
     int index_count, 
@@ -18,7 +19,7 @@ mesh_t mesh_new(
 
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertex_count, vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vec3_t) * vertex_count, vertices, GL_STATIC_DRAW);
 
     glGenBuffers(1, &ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);

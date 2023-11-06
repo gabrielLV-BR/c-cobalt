@@ -3,6 +3,7 @@
 #include "utils/file.h"
 #include "renderer/mesh.h"
 #include "structs/vector.h"
+#include "math/vec.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -14,7 +15,20 @@ typedef struct {
     int v_uv_count;
 } count_result_t;
 
-count_result_t __count_vertices_from_source(char* source, long len) {
+vec3_t __parse_vec3_t(const char* token) {
+    // token should be in this format
+    // v( |n|t) %f %f %f\n
+
+    float x, y, z;
+
+    int status = sscanf(token, "v %f %f %f", &x, &y, &z);
+
+    printf("Status = %d\n", status);
+    printf("X = %f\n Y = %f\n Z = %f\n", x, y, z);
+
+}
+
+count_result_t __count_vertices_from_source(const char* source, long len) {
     count_result_t count = {0};
 
     int in_comment = 0;
@@ -68,10 +82,13 @@ mesh_t mesh_loader_load_from_file(const char* path) {
     vec3_t* vertex_normals = calloc(count.v_normal_count, sizeof(vec3_t));
     vec3_t* vertex_uvs = calloc(count.v_uv_count, sizeof(vec3_t));
 
-    char * token = strtok(source, "\n");
+    printf("Loading mesh\n");
 
-    while( token != NULL ) {
-
+    for(
+        char* token = strtok(source, "\n") ; 
+        token != NULL ; 
+        token = strtok(NULL, source)
+    ) {
         /*
             There are a few possibilities when it comes to the starting char:
             - #  : that's a comment, can ignore;
@@ -86,23 +103,17 @@ mesh_t mesh_loader_load_from_file(const char* path) {
 
         switch (token[0])
         {
-        case '#': continue;
-        case 'v': {
-
-            if(token[1] == ' ') {
-                // vertex
-
-            }
-
-            break;
-        };
+            case 'v': {
+                vec3_t buff = __parse_vec3_t(token);
+            };
         }
-
-        token = strtok(NULL, "\n");
     }
 
 EXIT:
     free(source);
+    free(vertex_uvs);
+    free(vertex_normals);
+    free(vertex_positions);
 
-    return model;
+    return mesh;
 }

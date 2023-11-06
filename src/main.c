@@ -12,6 +12,7 @@
 #include "renderer/shader.h"
 #include "renderer/texture.h"
 #include "renderer/renderer.h"
+#include "loader/mesh_loader.h"
 
 #include "utils/error.h"
 #include "utils/arr.h"
@@ -41,6 +42,8 @@ int main(void) {
     glViewport(0, 0, 500, 500);
     glClearColor(0.2, 0.6, 0.9, 1.0);
     
+    mesh_loader_load_from_file("assets/models/monkey.obj");
+
     //
 
     camera_t camera;
@@ -50,10 +53,6 @@ int main(void) {
     camera.position = (vec3_t){0, 1, 2};
     camera.target = (vec3_t){0, 0, 0};
     camera.projection = PROJECTION_PERSPECTIVE;
-
-    mat4_t model_matrix = mat4_identity();
-    mat4_t view_matrix = mat4_identity();
-    mat4_t projection_matrix = mat4_identity();
 
     //
 
@@ -87,7 +86,6 @@ int main(void) {
         2, 3, 0
     };
 
-
     mesh_t mesh = mesh_new(
         vertices, 
         sizeof vertices / sizeof(float), 
@@ -100,7 +98,7 @@ int main(void) {
 
     model_t model = {
         .mesh_handle_count = 1,
-        .mesh_handles = to_uint32_t_array(mesh_handle),
+        .mesh_handles = &mesh_handle,
         .transform = transform_identity()
     };
 
@@ -120,8 +118,6 @@ int main(void) {
         last_time = now;
 
         accum += delta;
-
-        model_matrix = mat4_rotate_x(model_matrix, delta / 100.0);
 
         glClear(GL_COLOR_BUFFER_BIT);
 

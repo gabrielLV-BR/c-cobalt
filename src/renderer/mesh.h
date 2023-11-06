@@ -2,13 +2,14 @@
 #define MESH_H
 
 #include "material.h"
+#include "math/vec.h"
 
 #include <stdint.h>
 
 typedef struct mesh_t {
     uint32_t vao, vbo, ebo;
 
-    float* vertices;
+    vec3_t* vertices;
     int vertex_count;
 
     int index_count;
@@ -18,7 +19,7 @@ typedef struct mesh_t {
 } mesh_t;
 
 mesh_t mesh_new(
-    float* vertices, 
+    vec3_t* vertices, 
     int vertex_count, 
     uint32_t* indices, 
     int index_count, 
