@@ -21,7 +21,7 @@ vec3_t __parse_vec3_t(const char* token) {
 
     float x, y, z;
 
-    int status = sscanf(token, "v %f %f %f", &x, &y, &z);
+    int status = sscanf(token, "%*s %f %f %f", &x, &y, &z);
 
     printf("Status = %d\n", status);
     printf("X = %f\n Y = %f\n Z = %f\n", x, y, z);
@@ -66,54 +66,42 @@ count_result_t __count_vertices_from_source(const char* source, long len) {
 }
 
 mesh_t mesh_loader_load_from_file(const char* path) {
-    char* source;
+
+    FILE* f = fopen(path, "r");
+    char* line = NULL;
+    int status = 0;
+    size_t size = 0;
+
     mesh_t mesh = {0};
-    long len = read_from_file(path, &source);
 
-    if(len == -1) {
-        goto EXIT;
-    }
+    vector_void_t vertex_positions = vector_void_new(50);
+    vector_void_t vertex_normals = vector_void_new(50);
+    vector_void_t vertex_uvs = vector_void_new(50);
 
-    //
+    if(f == NULL) goto EXIT;
 
-    count_result_t count = __count_vertices_from_source(source, len);
+    do {
+        status = getline(&line, &size, f);        
 
-    vec3_t* vertex_positions = calloc(count.v_position_count, sizeof(vec3_t));
-    vec3_t* vertex_normals = calloc(count.v_normal_count, sizeof(vec3_t));
-    vec3_t* vertex_uvs = calloc(count.v_uv_count, sizeof(vec3_t));
+        printf("Reading line: %s\n", line);
 
-    printf("Loading mesh\n");
+        if(!line) continue;
 
-    for(
-        char* token = strtok(source, "\n") ; 
-        token != NULL ; 
-        token = strtok(NULL, source)
-    ) {
-        /*
-            There are a few possibilities when it comes to the starting char:
-            - #  : that's a comment, can ignore;
-            - v  : vertex;
-            - vn : vertex normal;
-            - vt : vertex texture coordinate;
-            - f  : face
-            - mtlib : material to load
-            - usemat: material to use
-            - o  : object's name
-        */
-
-        switch (token[0])
+        switch (line[0])
         {
             case 'v': {
-                vec3_t buff = __parse_vec3_t(token);
+                printf("Is vertex!\n");
+                vec3_t buff = __parse_vec3_t(line);
+                printf("(%f, %f, %f)\n", buff.x, buff.y, buff.z);
             };
         }
-    }
+    } while(status != -1);
 
 EXIT:
-    free(source);
-    free(vertex_uvs);
-    free(vertex_normals);
-    free(vertex_positions);
+
+    if(line) free(line);
+
+    fclose(f);
 
     return mesh;
 }

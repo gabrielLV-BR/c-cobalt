@@ -38,3 +38,8 @@ void vector_void_destroy(vector_void_t* vec) {
     
     free(vec->data);
 }
+
+void vector_void_fit(vector_void_t* vec) {
+    // essentially trim
+    realloc(vec->data, vec->length * sizeof(void*));
+}
