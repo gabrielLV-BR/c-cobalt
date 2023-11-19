@@ -1,6 +1,7 @@
 #include "vector.h"
 #include "utils/error.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
 
@@ -22,7 +23,11 @@ vector_void_t vector_void_new(int initial_size) {
 
 void vector_void_append(vector_void_t* vec, void* data) {
     if(vec->capacity < (vec->length + 1)) { 
-        vec->data = realloc(vec->data, vec->capacity * 2 * sizeof(void*));
+        int new_capacity = vec->capacity * 2;
+        vec->capacity = new_capacity;
+
+        int next_size = vec->capacity * sizeof(void*);
+        vec->data = realloc(vec->data, next_size);
     }
 
     if(!vec->data) {

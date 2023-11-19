@@ -42,8 +42,6 @@ int main(void) {
     glViewport(0, 0, 500, 500);
     glClearColor(0.2, 0.6, 0.9, 1.0);
     
-    mesh_loader_load_from_file("assets/models/monkey.obj");
-
     //
 
     camera_t camera;
@@ -71,28 +69,31 @@ int main(void) {
 
     uint32_t material_handle = scene_load_material(&scene, &material);
 
+    mesh_t mesh = mesh_loader_load_from_file("assets/models/monkey.obj");
+    mesh.material_handle = material_handle;
+
     // mesh
 
-    float vertices[] = {
-        // positions         // texture coords
-         0.5f,  0.5f, 0.0f,  1.0f, 1.0f, // top right
-         0.5f, -0.5f, 0.0f,  1.0f, 0.0f, // bottom right
-        -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, // bottom left
-        -0.5f,  0.5f, 0.0f,  0.0f, 1.0f  // top left 
-    };
+    // float vertices[] = {
+    //     // positions         // texture coords
+    //      0.5f,  0.5f, 0.0f,  1.0f, 1.0f, // top right
+    //      0.5f, -0.5f, 0.0f,  1.0f, 0.0f, // bottom right
+    //     -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, // bottom left
+    //     -0.5f,  0.5f, 0.0f,  0.0f, 1.0f  // top left 
+    // };
 
-    uint32_t indices[] = {
-        0, 1, 2,
-        2, 3, 0
-    };
+    // uint32_t indices[] = {
+    //     0, 1, 2,
+    //     2, 3, 0
+    // };
 
-    mesh_t mesh = mesh_new(
-        vertices, 
-        sizeof vertices / sizeof(float), 
-        indices, 
-        sizeof indices / sizeof(uint32_t),
-        material_handle
-    );
+    // mesh_t mesh = mesh_new(
+    //     vertices, 
+    //     sizeof vertices / sizeof(float), 
+    //     indices, 
+    //     sizeof indices / sizeof(uint32_t),
+    //     material_handle
+    // );
 
     uint32_t mesh_handle = scene_load_mesh(&scene, &mesh);
 

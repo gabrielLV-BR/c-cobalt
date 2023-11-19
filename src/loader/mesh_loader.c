@@ -16,11 +16,10 @@ typedef struct {
 } count_result_t;
 
 typedef struct {
-    size_t v_position;
-    size_t v_normal;
-    size_t v_uv;
+    uint32_t v_position[3];
+    uint32_t v_normal[3];
+    size_t v_uv[3];
 } face_t;
-
 
 vec3_t __parse_vec3_t(const char* token) {
     // token should be in this format
@@ -33,6 +32,7 @@ vec3_t __parse_vec3_t(const char* token) {
     printf("Status = %d\n", status);
     printf("X = %f\n Y = %f\n Z = %f\n", x, y, z);
 
+    return (vec3_t) { x, y, z };
 }
 
 count_result_t __count_vertices_from_source(const char* source, long len) {
@@ -72,9 +72,23 @@ count_result_t __count_vertices_from_source(const char* source, long len) {
     return count;
 }
 
-face_t[3] __parse_face_t(const char* token) {
-    face_t faces[3];
+face_t __parse_face_t(const char* token) {
+    face_t face;
+
+    int status = sscanf(
+        token, 
+        "%*s %d/%d/%d %d/%d/%d %d/%d/%d", 
+        &face.v_position[0], &face.v_normal[0], &face.v_uv[0],
+        &face.v_position[1], &face.v_normal[1], &face.v_uv[1],
+        &face.v_position[2], &face.v_normal[2], &face.v_uv[2]
+    );
+
+    printf("Status = %d\n", status);
+
+    return face;
 }
+
+void __insert_vertex() {}
 
 mesh_t mesh_loader_load_from_file(const char* path) {
 
@@ -88,6 +102,8 @@ mesh_t mesh_loader_load_from_file(const char* path) {
     vector_void_t vertex_positions = vector_void_new(50);
     vector_void_t vertex_normals = vector_void_new(50);
     vector_void_t vertex_uvs = vector_void_new(50);
+
+    vector_void_t indices = vector_void_new(50);
 
     if(f == NULL) goto EXIT;
 
@@ -121,10 +137,24 @@ mesh_t mesh_loader_load_from_file(const char* path) {
                 break;
             }
             case 'f': {
+                face_t face = __parse_face_t(line);
 
+                // for now, we only care about position
+                // so we can just aggregate the indices
+                for(int i = 0; i < 3; i ++)
+                    vector_void_append(&indices, &face.v_position[i]);
+
+                // in the future, we'll have to rebuild the vertex
+                // to include the normals and UV
             }
         }
     } while(status != -1);
+
+    mesh = mesh_new(
+        vertex_positions.data, vertex_positions.length,
+        indices.data, indices.length,
+        0
+    );
 
 EXIT:
 
