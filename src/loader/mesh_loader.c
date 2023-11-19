@@ -15,6 +15,13 @@ typedef struct {
     int v_uv_count;
 } count_result_t;
 
+typedef struct {
+    size_t v_position;
+    size_t v_normal;
+    size_t v_uv;
+} face_t;
+
+
 vec3_t __parse_vec3_t(const char* token) {
     // token should be in this format
     // v( |n|t) %f %f %f\n
@@ -65,6 +72,10 @@ count_result_t __count_vertices_from_source(const char* source, long len) {
     return count;
 }
 
+face_t[3] __parse_face_t(const char* token) {
+    face_t faces[3];
+}
+
 mesh_t mesh_loader_load_from_file(const char* path) {
 
     FILE* f = fopen(path, "r");
@@ -91,9 +102,27 @@ mesh_t mesh_loader_load_from_file(const char* path) {
         {
             case 'v': {
                 printf("Is vertex!\n");
-                vec3_t buff = __parse_vec3_t(line);
-                printf("(%f, %f, %f)\n", buff.x, buff.y, buff.z);
-            };
+                vec3_t* data = malloc(sizeof(vec3_t));
+                *data = __parse_vec3_t(line);
+
+                switch (line[1])
+                {
+                    case ' ':
+                        vector_void_append(&vertex_positions, data);
+                        break;
+                    case 'n':
+                        vector_void_append(&vertex_normals, data);
+                        break;
+                    case 't':
+                        vector_void_append(&vertex_uvs, data);
+                        break;
+                }
+
+                break;
+            }
+            case 'f': {
+
+            }
         }
     } while(status != -1);
 
