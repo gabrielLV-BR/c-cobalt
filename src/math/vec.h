@@ -1,7 +1,10 @@
-#if !defined(VEC_H)
-#define VEC_H
+#ifndef __vec_h__
+#define __vec_h__
 
-typedef struct vec3_t {
+#include <stdint.h>
+#include <stdbool.h>
+
+typedef struct {
     float x, y, z;
 
     union {
@@ -9,7 +12,15 @@ typedef struct vec3_t {
     };
 } vec3_t;
 
-// constructors
+typedef struct {
+    float x, y;
+
+    union {
+        float data[2];
+    };
+} vec2_t;
+
+// vec 3
 vec3_t vec3_new(float x, float y, float z);
 vec3_t vec3_zero();
 vec3_t vec3_one();
@@ -24,4 +35,27 @@ vec3_t vec3_normalize(vec3_t vec);
 vec3_t vec3_scaled(vec3_t vec, float scalar);
 vec3_t vec3_cross(vec3_t a, vec3_t b);
 
-#endif // VEC_H
+bool vec3_cmp(vec3_t a, vec3_t b);
+uint32_t vec3_hash(vec3_t vec);
+
+// vec 2
+
+vec2_t vec2_new(float x, float y);
+vec2_t vec2_zero();
+vec2_t vec2_one();
+
+float vec2_magnitude(vec2_t vec);
+
+vec2_t vec2_add(vec2_t a, vec2_t b);
+vec2_t vec2_sub(vec2_t a, vec2_t b);
+
+vec2_t vec2_normalize(vec2_t vec);
+vec2_t vec2_scaled(vec2_t vec, float scalar);
+
+vec2_t vec2_perpendicular_clockwise(vec2_t vec);
+vec2_t vec2_perpendicular_counter_clockwise(vec2_t vec);
+
+bool vec2_cmp(vec2_t a, vec2_t b);
+uint32_t vec2_hash(vec2_t vec);
+
+#endif // __vec_h__

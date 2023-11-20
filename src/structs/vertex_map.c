@@ -1,26 +1,24 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include "vec3_map.h"
-
-#define ISZERO(v) (v.x == 0 && v.y == 0 && v.z == 0)
+#include "vertex_map.h"
 
 struct list_node;
 
 struct list_node {
-    vec3_t key;
+    vertex_t key;
     uint32_t value;
     struct list_node* next;
 };
 
 typedef struct list_node linked_list_t;
 
-typedef struct vec3_map_t {
+typedef struct vertex_map_t {
     linked_list_t indices[MAP_DEFAULT_CAPACITY];
-} vec3_map_t;
+} vertex_map_t;
 
-vec3_map_t* vec3_map_new() {
-    vec3_map_t* map = calloc(1, sizeof(vec3_map_t));
+vertex_map_t* vertex_map_new() {
+    vertex_map_t* map = calloc(1, sizeof(vertex_map_t));
     return map;
 }
 
@@ -32,7 +30,7 @@ void index_linked_list_delete(linked_list_t* ll) {
     }
 }
 
-void vec3_map_delete(vec3_map_t* map) {
+void vertex_map_delete(vertex_map_t* map) {
     for(int i = 0; i < MAP_DEFAULT_CAPACITY; i++) {
         linked_list_t* next = map->indices[i].next;
 
@@ -42,12 +40,12 @@ void vec3_map_delete(vec3_map_t* map) {
     free(map);
 }
 
-void map_insert_vec3(vec3_map_t* map, vec3_t key, uint32_t value) {
-    size_t index = vec3_hash(key);
+void map_insert_vertex(vertex_map_t* map, vertex_t key, uint32_t value) {
+    size_t index = vertex_hash(key);
 
     linked_list_t* index_list = &map->indices[index];
 
-    if(ISZERO(index_list->key)) {
+    if(vertex_is_zero(index_list->key)) {
         // it's free, baby!
         index_list->key = key;
         index_list->value = value;
@@ -66,12 +64,12 @@ void map_insert_vec3(vec3_map_t* map, vec3_t key, uint32_t value) {
     }
 }
 
-uint32_t map_get_vec3(vec3_map_t* map, vec3_t key) {
-    size_t index = vec3_hash(key);
+uint32_t map_get_vertex(vertex_map_t* map, vertex_t key) {
+    size_t index = vertex_hash(key);
 
     linked_list_t* node = &map->indices[index];
 
-    while(node != NULL && vec3_cmp(node->key, key) == false)
+    while(node != NULL && vertex_cmp(node->key, key) == false)
         node = node->next;
 
     if(node == NULL) {
@@ -81,26 +79,26 @@ uint32_t map_get_vec3(vec3_map_t* map, vec3_t key) {
     return node->value;
 }
 
-inline uint32_t vec3_hash(vec3_t vec) {
-    // naive hash algorithm for vec
-    // provided by yours truly, ChatGPT
-    uint32_t x = *((uint32_t*) &vec.x);
-    uint32_t y = *((uint32_t*) &vec.y);
-    uint32_t z = *((uint32_t*) &vec.z);
+inline uint32_t vertex_hash(vertex_t vec) {
+    uint32_t hash = 69;
 
-    uint32_t hash = 17;
-
-    hash = 31 * hash + x;
-    hash = 31 * hash + y;
-    hash = 31 * hash + z;
+    hash += 34 * vec3_hash(vec.position);
+    hash += 23 * vec3_hash(vec.normal);
+    hash += 12 * vec2_hash(vec.uv);
 
     hash %= MAP_DEFAULT_CAPACITY;
-
-    printf("HASH = {%ld}\n", hash);
 
     return hash;
 }
 
-inline bool vec3_cmp(vec3_t a, vec3_t b) {
-    return (a.x == b.x && a.y == b.y && a.z == b.z);
+inline bool vertex_is_zero(vertex_t v) {
+    static vertex_t zero = {0};
+
+    return vertex_cmp(v, zero);
+}
+
+inline bool vertex_cmp(vertex_t a, vertex_t b) {    
+    return vec3_cmp(a.position, b.position)
+        && vec3_cmp(a.normal, b.normal)
+        && vec2_cmp(a.uv, b.uv);
 }
