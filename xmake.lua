@@ -8,7 +8,7 @@ set_languages("c99")
 
 target("cobalt")
     set_kind("binary")
-        
+
     add_includedirs(
         "src/", 
         "vendor/"
@@ -22,3 +22,12 @@ target("cobalt")
     )
 
     add_packages("glfw")
+
+task("vendor")
+    on_run("init")
+
+    set_menu {
+        usage = "xmake vendor",
+        description = "Downloads and sets up vendor libraries",
+        options = {}
+    }
