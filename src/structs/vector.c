@@ -5,46 +5,54 @@
 #include <stdlib.h>
 #include <memory.h>
 
-vector_void_t vector_void_new(int initial_size) {
-    void* data = calloc(initial_size, sizeof(void*));
-
-    if(!data) {
-        ERROR("When allocating data for void vector");
-        data = NULL;
-        initial_size = -1;
+#define __VECTOR_IMPLEMENT_NEW(type)                                \
+    type##_vector_t type##_vector_new(int initial_size) {           \
+        type##* data = calloc(initial_size, sizeof(type));          \
+                                                                    \
+        if(!data) {                                                 \
+            ERROR("When allocating data for "type" vector");        \
+            data = NULL;                                            \
+            initial_size = -1;                                      \
+        }                                                           \
+                                                                    \
+        return (vector_void_t) {                                    \
+            .data = data,                                           \
+            .capacity = initial_size,                               \
+            .length = 0                                             \
+        };                                                          \
     }
 
-    return (vector_void_t) {
-        .data = data,
-        .capacity = initial_size,
-        .length = 0
-    };
-}
-
-void vector_void_append(vector_void_t* vec, void* data) {
-    if(vec->capacity < (vec->length + 1)) { 
-        int new_capacity = vec->capacity * 2;
-        vec->capacity = new_capacity;
-
-        int next_size = vec->capacity * sizeof(void*);
-        vec->data = realloc(vec->data, next_size);
+#define __VECTOR_IMPLEMENT_APPEND(type)                             \
+    void type##_vector_append(type##_vector_t* vec, void* data) {   \
+        if(vec->capacity < (vec->length + 1)) {                     \
+            int new_capacity = vec->capacity * 2;                   \
+            vec->capacity = new_capacity;                           \
+                                                                    \
+            int next_size = vec->capacity * sizeof(type);           \
+            vec->data = realloc(vec->data, next_size);              \
+        }                                                           \
+                                                                    \
+        if(!vec->data) {                                            \
+            ERROR("When appending to "type" vector");               \
+        } else {                                                    \
+            vec->data[vec->length++] = data;                        \
+        }                                                           \
     }
 
-    if(!vec->data) {
-        ERROR("When resizing void vector");
-    } else {
-        vec->data[vec->length++] = data;
+#define __VECTOR_IMPLEMENT_DESTROY(type)                            \
+    void type##_vector_destroy(type##_vector_t* vec) {              \
+        for(int i = 0; i < vec->length; i++)                        \
+            free(vec->data[i]);                                     \
+        free(vec->data);                                            \
     }
-}
 
-void vector_void_destroy(vector_void_t* vec) {
-    for(int i = 0; i < vec->length; i++)
-        free(vec->data[i]);
-    
-    free(vec->data);
-}
+#define __VECTOR_IMPLEMENT_FIT(type)                                \
+    void type##_vector_fit(type##_vector_t* vec) {                  \
+        realloc(vec->data, vec->length * sizeof(typedef));          \
+    }
 
-void vector_void_fit(vector_void_t* vec) {
-    // essentially trim
-    realloc(vec->data, vec->length * sizeof(void*));
-}
+#define VECTOR_IMPLEMENT(type)                                      \
+    __VECTOR_IMPLEMENT_NEW(type)                                    \
+    __VECTOR_IMPLEMENT_APPEND(type)                                 \
+    __VECTOR_IMPLEMENT_DESTROY(type)                                \
+    __VECTOR_IMPLEMENT_FIT(type)        

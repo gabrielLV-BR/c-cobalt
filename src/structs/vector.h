@@ -1,14 +1,20 @@
-#if !defined(VECTOR_H)
-#define VECTOR_H
+#ifndef ____vector_h__
+#define __vector_h__
 
-typedef struct vector_void_t {
-    void** data;
-    int capacity, length;
-} vector_void_t;
+#define __VECTOR_DEFINE_STRUCT(type)                                \
+    typedef struct type##_vector_t {                                \
+        type##* data;                                               \
+        int capacity, length;                                       \
+    } type##_vector_t;
 
-vector_void_t vector_void_new(int initial_size);
-void vector_void_append(vector_void_t* vec, void* data);
-void vector_void_destroy(vector_void_t* vec);
-void vector_void_fit(vector_void_t* vec);
+#define __VECTOR_DEFINE_FUNCS(type)                                 \
+    type##_vector_t type##_vector_new(int initial_size);            \
+    void type##_vector_append(type##_vector_t* vec, void* data);    \
+    void type##_vector_destroy(type##_vector_t* vec);               \
+    void type##_vector_fit(type##_vector_t* vec);
 
-#endif // VECTOR_H
+#define VECTOR_DEFINE(type)                                         \
+    __VECTOR_DEFINE_STRUCT(type)                                    \
+    __VECTOR_DEFINE_FUNCS(type)
+
+#endif // __vector_h__
