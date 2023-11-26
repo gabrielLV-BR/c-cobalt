@@ -4,9 +4,17 @@ local function setup_stb_image()
 
     local url = "https://raw.githubusercontent.com/nothings/stb/master/stb_image.h"
 
-    cprint("${dim black}Downloading stb_image")
-
+    -- stb_image.h
+    cprint("\t${dim black}Downloading stb_image.h")
     local ok = http.download(url, "vendor/stb/stb_image.h")
+    -- stb_image.c
+    local stb_image_c = [[
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+    ]]
+
+    cprint("\t${dim black}Creating stb_image.c")
+    io.writefile("vendor/stb/stb_image.c", stb_image_c)
 end
 
 local function setup_glad()
