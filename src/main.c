@@ -67,7 +67,7 @@ int main(void) {
         .map_handles = to_uint32_t_array(texture.handle)
     };
 
-    uint32_t material_handle = scene_load_material(&scene, &material);
+    uint32_t material_handle = scene_upload_material(&scene, material);
 
     mesh_t mesh = mesh_loader_load_from_file("assets/models/monkey.obj");
     mesh.material_handle = material_handle;
@@ -95,7 +95,7 @@ int main(void) {
     //     material_handle
     // );
 
-    uint32_t mesh_handle = scene_load_mesh(&scene, &mesh);
+    uint32_t mesh_handle = scene_upload_mesh(&scene, mesh);
 
     model_t model = {
         .mesh_handle_count = 1,
@@ -103,7 +103,7 @@ int main(void) {
         .transform = transform_identity()
     };
 
-    scene_add_model(&scene, &model);
+    scene_upload_model(&scene, model);
 
     //
 

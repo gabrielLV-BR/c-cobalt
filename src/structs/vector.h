@@ -9,30 +9,31 @@
 // DEFINITIONS
 
 #define __VECTOR_DEFINE_STRUCT(type)                                \
-    typedef struct type##_vector_t {                                \
+    typedef struct vector_##type {                                  \
         type *data;                                                 \
         int capacity, length;                                       \
-    } type##_vector_t;
+    } vector_##type;
 
 #define __VECTOR_DEFINE_FUNCS(type)                                 \
-    type##_vector_t type##_vector_new(int initial_size);            \
-    void type##_vector_append(type##_vector_t* vec, void* data);    \
-    void type##_vector_destroy(type##_vector_t* vec);               \
-    void type##_vector_fit(type##_vector_t* vec);
+    vector_##type vector_new_##type(int initial_size);              \
+    void vector_append_##type(vector_##type* vec, type data);       \
+    void vector_destroy_##type(vector_##type* vec);                 \
+    void vector_recursive_destroy_##type(vector_##type* vec);       \
+    void vector_fit_##type(vector_##type* vec);
 
 // IMPLEMENTATIONS
 
 #define __VECTOR_IMPLEMENT_NEW(type)                                \
-    type##_vector_t type##_vector_new(int initial_size) {           \
+    vector_##type vector_new_##type(int initial_size) {             \
         type *data = calloc(initial_size, sizeof(type));            \
                                                                     \
         if(!data) {                                                 \
-            ERROR("When allocating data for "type" vector");        \
+            ERROR("When creating vector");                          \
             data = NULL;                                            \
             initial_size = -1;                                      \
         }                                                           \
                                                                     \
-        return (vector_void_t) {                                    \
+        return (vector_##type) {                                    \
             .data = data,                                           \
             .capacity = initial_size,                               \
             .length = 0                                             \
@@ -40,7 +41,7 @@
     }
 
 #define __VECTOR_IMPLEMENT_APPEND(type)                             \
-    void type##_vector_append(type##_vector_t* vec, type data) {   \
+    void vector_append_##type(vector_##type* vec, type data) {   \
         if(vec->capacity < (vec->length + 1)) {                     \
             int new_capacity = vec->capacity * 2;                   \
             vec->capacity = new_capacity;                           \
@@ -50,22 +51,27 @@
         }                                                           \
                                                                     \
         if(!vec->data) {                                            \
-            ERROR("When appending to "type" vector");               \
+            ERROR("When appending to vector");                      \
         } else {                                                    \
             vec->data[vec->length++] = data;                        \
         }                                                           \
     }
 
 #define __VECTOR_IMPLEMENT_DESTROY(type)                            \
-    void type##_vector_destroy(type##_vector_t* vec) {              \
+    void vector_destroy_##type(vector_##type* vec) {                \
+        free(vec->data);                                            \
+    }
+
+#define __VECTOR_IMPLEMENT_RECURSIVE_DESTROY(type)                  \
+    void vector_recursive_destroy_##type(vector_##type* vec) {      \
         for(int i = 0; i < vec->length; i++)                        \
             free(vec->data[i]);                                     \
         free(vec->data);                                            \
     }
 
 #define __VECTOR_IMPLEMENT_FIT(type)                                \
-    void type##_vector_fit(type##_vector_t* vec) {                  \
-        realloc(vec->data, vec->length * sizeof(typedef));          \
+    void vector_fit_##type(vector_##type* vec) {                    \
+        realloc(vec->data, vec->length * sizeof(type));             \
     }
 
 // USE THESE

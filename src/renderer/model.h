@@ -8,6 +8,8 @@
 #include "math/matrix.h"
 #include "math/transform.h"
 
+#include "structs/vector.h"
+
 typedef struct model_t {
     uint32_t* mesh_handles;
     uint32_t mesh_handle_count;
@@ -21,5 +23,7 @@ model_t model_new(uint32_t* mesh_handles, int mesh_handle_count, transform_t tra
 model_t model_load_from_file(const char* path);
 
 void model_destroy(model_t* mesh);
+
+VECTOR_DEFINE(model_t)
 
 #endif // __model_h__

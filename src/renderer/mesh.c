@@ -60,3 +60,5 @@ void mesh_destroy(mesh_t* mesh) {
     glDeleteBuffers(1, &mesh->ebo);
     glDeleteVertexArrays(1, &mesh->vao);
 }
+
+VECTOR_IMPLEMENT(mesh_t)

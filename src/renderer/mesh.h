@@ -4,6 +4,8 @@
 #include "material.h"
 #include "math/vec.h"
 
+#include "structs/vector.h"
+
 #include <stdint.h>
 
 typedef struct mesh_t {
@@ -27,5 +29,7 @@ mesh_t mesh_new(
 );
 
 void mesh_destroy(mesh_t* mesh);
+
+VECTOR_DEFINE(mesh_t)
 
 #endif // MESH_H

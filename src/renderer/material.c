@@ -78,3 +78,5 @@ EXIT:
 void material_destroy(material_t material) {
     free(material.map_handles);
 }
+
+VECTOR_IMPLEMENT(material_t)

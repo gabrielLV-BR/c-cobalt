@@ -113,14 +113,14 @@ void renderer_render(renderer_t* renderer, scene_t* scene, camera_t* camera) {
     mat4_t model_matrix;
 
     for(int model_index = 0; model_index < scene->models.length; model_index++) {
-        model_t* model = scene->models.data[model_index];
+        model_t* model = &scene->models.data[model_index];
 
         for(int mesh_index = 0; mesh_index < model->mesh_handle_count; mesh_index++) {
             uint32_t mesh_handle = model->mesh_handles[mesh_index];
-            mesh_t* mesh = (mesh_t*) scene->meshes.data[mesh_handle];
+            mesh_t* mesh = &scene->meshes.data[mesh_handle];
 
             uint32_t material_handle = mesh->material_handle;
-            material_t* material = (material_t*) scene->materials.data[material_handle];
+            material_t* material = &scene->materials.data[material_handle];
 
             model_matrix = transform_get_model_matrix(&model->transform);
 

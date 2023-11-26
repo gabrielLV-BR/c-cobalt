@@ -82,6 +82,8 @@ uint32_t vec3_hash(vec3_t vec) {
     return hash;
 }
 
+VECTOR_IMPLEMENT(vec3_t)
+
 // vec 2
 
 vec2_t vec2_new(float x, float y) {
@@ -147,3 +149,5 @@ uint32_t vec2_hash(vec2_t vec) {
 
     return hash;
 }
+
+VECTOR_IMPLEMENT(vec2_t)

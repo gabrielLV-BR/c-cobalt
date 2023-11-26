@@ -27,3 +27,5 @@ model_t model_load_from_file(const char* path) {
 void model_destroy(model_t* model) {
     free(model->mesh_handles);
 }
+
+VECTOR_IMPLEMENT(model_t)
