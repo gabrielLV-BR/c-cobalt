@@ -11,7 +11,7 @@
 #define __VECTOR_DEFINE_STRUCT(type)                                \
     typedef struct vector_##type {                                  \
         type *data;                                                 \
-        int capacity, length;                                       \
+        size_t capacity, length;                                    \
     } vector_##type;
 
 #define __VECTOR_DEFINE_FUNCS(type)                                 \
@@ -43,9 +43,7 @@
 #define __VECTOR_IMPLEMENT_APPEND(type)                             \
     void vector_append_##type(vector_##type* vec, type data) {   \
         if(vec->capacity < (vec->length + 1)) {                     \
-            int new_capacity = vec->capacity * 2;                   \
-            vec->capacity = new_capacity;                           \
-                                                                    \
+            vec->capacity *= 2;                                     \
             int next_size = vec->capacity * sizeof(type);           \
             vec->data = realloc(vec->data, next_size);              \
         }                                                           \
