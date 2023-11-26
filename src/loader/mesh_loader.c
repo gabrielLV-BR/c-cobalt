@@ -8,7 +8,11 @@
 #include "utils/file.h"
 #include "renderer/mesh.h"
 #include "renderer/vertex.h"
+#include "structs/base.h"
 #include "structs/vector.h"
+#include "structs/vertex_map.h"
+
+#define DEFAULT_VECTOR_SIZE 100
 
 typedef struct {
     int v_position_count;
@@ -24,11 +28,23 @@ typedef struct {
 
 // fd decl
 
-vec3_t          __parse_vec3_t(const char* token);
-face_t          __parse_face_t(const char* token);
-count_result_t  __count_vertices_from_source(const char* source, long len) ;
+void parse_vertex(
+    const char* line, 
+    vector_vec3_t* positions,
+    vector_vec3_t* normals,
+    vector_vec2_t* uvs
+);
 
-void            __insert_vertex();
+void insert_vertex(
+    vertex_t vertex,
+    vertex_map_t* map,
+    vector_vertex_t* vertices,
+    vector_uint32_t* indices
+);
+
+vec3_t  __parse_vec3_t(const char* token);
+vec2_t  __parse_vec2_t(const char* token);
+face_t  __parse_face_t(const char* token);
 
 //
 
@@ -41,45 +57,47 @@ mesh_t mesh_loader_load_from_file(const char* path) {
 
     mesh_t mesh = {0};
 
-    vector_vec3_t positions = vector_new_vec3_t(50);
-    vector_vec3_t normals = vector_new_vec3_t(50);
-    vector_vec3_t uvs = vector_new_vec3_t(50);
+    vector_vec3_t positions = vector_new_vec3_t(DEFAULT_VECTOR_SIZE);
+    vector_vec3_t normals   = vector_new_vec3_t(DEFAULT_VECTOR_SIZE);
+    vector_vec2_t uvs       = vector_new_vec2_t(DEFAULT_VECTOR_SIZE);
 
-    vector_vertex_t indices = vector_new_vertex_t(50);
+    vector_vertex_t vertices = vector_new_vertex_t(DEFAULT_VECTOR_SIZE);
+    vector_uint32_t indices  = vector_new_uint32_t(DEFAULT_VECTOR_SIZE);
 
-    if(f == NULL) goto EXIT;
+    vertex_map_t* map = vertex_map_new();
+
+    if (f == NULL) goto EXIT;
 
     do {
         status = getline(&line, &size, f);        
 
-        printf("Reading line: %s\n", line);
+        if (!line) continue;
 
-        if(!line) continue;
+        char token = line[0];
 
-        switch (line[0])
-        {
-            case 'v': {
-                printf("Is vertex!\n");
-                vec3_t data = __parse_vec3_t(line);
+        if(token == 'v') {
+            parse_vertex(line, &positions, &normals, &uvs);
+        
+        } else if (token == 'f') {
 
-                switch (line[1])
-                {
-                    case ' ':
-                        vector_append_vec3_t(&positions, data);
-                        break;
-                    case 'n':
-                        vector_append_vec3_t(&normals, data);
-                        break;
-                    case 't':
-                        vector_append_vec3_t(&uvs, data);
-                        break;
-                }
+            face_t face = __parse_face_t(line);
 
-                break;
-            }
-            case 'f': {
-                face_t face = __parse_face_t(line);
-                //TODO build vertex
+            for(int i = 0; i < 3; i ++) {
+                printf("v_position = %d\nv_normal = %d\nv_uv = %d\n", face.v_position[i], face.v_normal[i], face.v_uv[i]);
+
+                vertex_t vertex = {
+                    positions.data[face.v_position[i] - 1],
+                    normals.data[face.v_normal[i] - 1],
+                    uvs.data[face.v_uv[i] - 1]
+                };
+
+                printf("inserting\n");
+                insert_vertex(
+                    vertex,
+                    map,
+                    &vertices,
+                    &indices
+                );
             }
         }
     } while(status != -1);
@@ -99,7 +117,52 @@ EXIT:
     return mesh;
 }
 
-// private
+void parse_vertex(const char* line, vector_vec3_t* positions, vector_vec3_t* normals, vector_vec2_t* uvs) {
+
+    // type:
+    // - ' ' : position
+    // - 'n' : normal
+    // - 't' : uv
+
+    char type = line[1];
+
+    if(type == ' ') {
+        vec3_t position = __parse_vec3_t(line);
+        vector_append_vec3_t(positions, position);
+    } 
+    else if(type == 'n') {
+        vec3_t normal = __parse_vec3_t(line);
+        vector_append_vec3_t(normals, normal);
+    }
+    else if(type == 't') {
+        vec2_t uv = __parse_vec2_t(line);
+        vector_append_vec2_t(uvs, uv);
+    }
+}
+
+void insert_vertex(
+    vertex_t vertex,
+    vertex_map_t* map,
+    vector_vertex_t* vertices,
+    vector_uint32_t* indices
+) {
+    printf("Inserting vertex\n");
+
+    uint32_t index = 0;
+    uint32_t maybe_index = vertex_map_get(map, vertex);
+    
+    if(maybe_index != NOT_FOUND) {
+        // not found, must insert
+        vertex_map_insert(map, vertex, index);
+        vector_append_vertex_t(vertices, vertex);
+        vector_append_uint32_t(indices, index++);
+    } else {
+        // found, use as is
+        vector_append_uint32_t(indices, maybe_index);
+    }
+}
+
+// utility
 
 vec3_t __parse_vec3_t(const char* token) {
     // token should be in this format
@@ -107,49 +170,20 @@ vec3_t __parse_vec3_t(const char* token) {
 
     float x, y, z;
 
-    int status = sscanf(token, "%*s %f %f %f", &x, &y, &z);
-
-    printf("Status = %d\n", status);
-    printf("X = %f\n Y = %f\n Z = %f\n", x, y, z);
+    sscanf(token, "%*s %f %f %f", &x, &y, &z);
 
     return (vec3_t) { x, y, z };
 }
 
-count_result_t __count_vertices_from_source(const char* source, long len) {
-    count_result_t count = {0};
+vec2_t  __parse_vec2_t(const char* token) {
+    // token should be in this format
+    // v( |n|t) %f %f \n
 
-    int in_comment = 0;
+    float x, y;
 
-    for(long i = 0; i < len; i++) {
-        char c = source[i];
+    sscanf(token, "%*s %f %f", &x, &y);
 
-        if(c == '#') {
-            in_comment = 1;
-        } else if(c == '\n') {
-            in_comment = 0;
-        }
-
-        if(in_comment == 1) continue;
-
-        if(c == 'v') {
-            switch(source[i + 1]) {
-                case ' ': {
-                    count.v_position_count++;
-                    break;
-                }
-                case 'n' : {
-                    count.v_normal_count++;
-                    break;
-                }
-                case 't': {
-                    count.v_uv_count++;
-                    break;
-                }
-            }
-        }
-    }
-
-    return count;
+    return (vec2_t) { x, y };
 }
 
 face_t __parse_face_t(const char* token) {
@@ -167,5 +201,3 @@ face_t __parse_face_t(const char* token) {
 
     return face;
 }
-
-void __insert_vertex() {}
