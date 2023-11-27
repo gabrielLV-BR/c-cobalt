@@ -21,8 +21,8 @@ typedef struct {
 } count_result_t;
 
 typedef struct {
-    uint32_t v_position[3];
-    uint32_t v_normal[3];
+    size_t v_position[3];
+    size_t v_normal[3];
     size_t v_uv[3];
 } face_t;
 
@@ -83,15 +83,16 @@ mesh_t mesh_loader_load_from_file(const char* path) {
             face_t face = __parse_face_t(line);
 
             for(int i = 0; i < 3; i ++) {
-                printf("v_position = %d\nv_normal = %d\nv_uv = %d\n", face.v_position[i], face.v_normal[i], face.v_uv[i]);
+                size_t position_index = face.v_position[i] - 1;
+                size_t normal_index = face.v_normal[i] - 1;
+                size_t uv_index = face.v_uv[i] - 1;
 
                 vertex_t vertex = {
-                    positions.data[face.v_position[i] - 1],
-                    normals.data[face.v_normal[i] - 1],
-                    uvs.data[face.v_uv[i] - 1]
+                    positions.data[position_index],
+                    normals.data[normal_index],
+                    uvs.data[uv_index]
                 };
 
-                printf("inserting\n");
                 insert_vertex(
                     vertex,
                     map,
@@ -146,8 +147,6 @@ void insert_vertex(
     vector_vertex_t* vertices,
     vector_uint32_t* indices
 ) {
-    printf("Inserting vertex\n");
-
     uint32_t index = 0;
     uint32_t maybe_index = vertex_map_get(map, vertex);
     
@@ -189,15 +188,13 @@ vec2_t  __parse_vec2_t(const char* token) {
 face_t __parse_face_t(const char* token) {
     face_t face;
 
-    int status = sscanf(
+    sscanf(
         token, 
-        "%*s %d/%d/%d %d/%d/%d %d/%d/%d", 
+        "%*s %ld/%ld/%ld %ld/%ld/%ld %ld/%ld/%ld", 
         &face.v_position[0], &face.v_normal[0], &face.v_uv[0],
         &face.v_position[1], &face.v_normal[1], &face.v_uv[1],
         &face.v_position[2], &face.v_normal[2], &face.v_uv[2]
     );
-
-    printf("Status = %d\n", status);
 
     return face;
 }
