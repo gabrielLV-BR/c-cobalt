@@ -1,9 +1,9 @@
 #include <stdio.h>
-#include <stdint.h>
 
 #include "vertex_map.h"
 
 typedef struct linked_list_t {
+    bool used;
     vertex_t key;
     uint32_t value;
     struct linked_list_t* next;
@@ -40,12 +40,13 @@ void vertex_map_delete(vertex_map_t* map) {
 }
 
 void vertex_map_insert(vertex_map_t* map, vertex_t key, uint32_t value) {
-    size_t index = __vertex_hash(key);
+    uint32_t index = __vertex_hash(key);
 
     linked_list_t* index_list = &map->indices[index];
 
-    if(__vertex_is_zero(index_list->key)) {
+    if(index_list->used == false) {
         // it's free, baby!
+        index_list->used = true;
         index_list->key = key;
         index_list->value = value;
         index_list->next = NULL;
@@ -56,18 +57,15 @@ void vertex_map_insert(vertex_map_t* map, vertex_t key, uint32_t value) {
 }
 
 uint32_t vertex_map_get(vertex_map_t* map, vertex_t key) {
-    size_t index = __vertex_hash(key);
+    uint32_t index = __vertex_hash(key);
 
-    linked_list_t* node = &map->indices[index];
-
-    while(node != NULL && __vertex_cmp(node->key, key) == false)
-        node = node->next;
-
-    if(node == NULL) {
-        return NOT_FOUND;
+    for(linked_list_t* node = &map->indices[index]; node != NULL; node = node->next) {
+        if(__vertex_cmp(node->key, key) == true) {
+            return node->value;
+        }
     }
 
-    return node->value;
+    return NOT_FOUND;
 }
 
 // vertex funcs
@@ -76,11 +74,13 @@ inline uint32_t __vertex_hash(vertex_t vec) {
     // hehe nice
     uint32_t hash = 69;
 
-    hash += 34 * vec3_hash(vec.position);
-    hash += 23 * vec3_hash(vec.normal);
-    hash += 12 * vec2_hash(vec.uv);
+    hash += 34 + vec3_hash(vec.position) * hash;
+    hash += 23 + vec3_hash(vec.normal) * hash;
+    hash += 12 + vec2_hash(vec.uv) * hash;
 
     hash %= MAP_DEFAULT_CAPACITY;
+
+    printf("Hash = %u\n", hash);
 
     return hash;
 }

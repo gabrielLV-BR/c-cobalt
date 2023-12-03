@@ -150,7 +150,7 @@ void insert_vertex(
     uint32_t index = 0;
     uint32_t maybe_index = vertex_map_get(map, vertex);
     
-    if(maybe_index != NOT_FOUND) {
+    if(maybe_index == NOT_FOUND) {
         // not found, must insert
         vertex_map_insert(map, vertex, index);
         vector_append_vertex_t(vertices, vertex);
