@@ -71,13 +71,13 @@ int main(void) {
 
     mesh_t mesh = mesh_loader_load_from_file("assets/models/cube.obj");
 
-    // for(int i = 0; i < mesh.vertex_count; i++) {
-    //     printf("Vertex(%.2f, %.2f, %.2f)\n", mesh.vertices[i].x, mesh.vertices[i].y, mesh.vertices[i].z);
-    // }
+    for(int i = 0; i < mesh.vertex_count; i++) {
+        printf("Vertex(%.2f, %.2f, %.2f)\n", mesh.vertices[i].x, mesh.vertices[i].y, mesh.vertices[i].z);
+    }
 
-    // for(int i = 0; i < mesh.index_count; i++) {
-    //     printf("Index: %u%c", mesh.indices[i], (i % 3 == 0 ? '\n' : ' '));
-    // }
+    for(int i = 0; i < mesh.index_count; i++) {
+        printf("Index: %u%c", mesh.indices[i], (i % 3 == 0 ? '\n' : ' '));
+    }
 
     mesh.material_handle = material_handle;
 

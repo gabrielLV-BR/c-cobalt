@@ -49,7 +49,6 @@ face_t  __parse_face_t(const char* token);
 //
 
 mesh_t mesh_loader_load_from_file(const char* path) {
-
     FILE* f = fopen(path, "r");
     char* line = NULL;
     int status = 0;
@@ -64,7 +63,7 @@ mesh_t mesh_loader_load_from_file(const char* path) {
     vector_vertex_t vertices = vector_new_vertex_t(DEFAULT_VECTOR_SIZE);
     vector_uint32_t indices  = vector_new_uint32_t(DEFAULT_VECTOR_SIZE);
 
-    vertex_map_t* map = vertex_map_new();
+    vertex_map_t map = vertex_map_new();
 
     if (f == NULL) goto EXIT;
 
@@ -82,6 +81,9 @@ mesh_t mesh_loader_load_from_file(const char* path) {
 
             face_t face = __parse_face_t(line);
 
+            uint32_t index = 0;
+            uint32_t maybe_index = 0;
+
             for(int i = 0; i < 3; i ++) {
                 size_t position_index = face.v_position[i] - 1;
                 size_t normal_index = face.v_normal[i] - 1;
@@ -93,15 +95,23 @@ mesh_t mesh_loader_load_from_file(const char* path) {
                     uvs.data[uv_index]
                 };
 
-                insert_vertex(
-                    vertex,
-                    map,
-                    &vertices,
-                    &indices
-                );
+                maybe_index = vertex_map_get(&map, vertex);
+
+                if (maybe_index == NOT_FOUND)
+                {
+                    // not found, must insert
+                    vertex_map_insert(&map, vertex, index);
+                    vector_append_vertex_t(&vertices, vertex);
+                    vector_append_uint32_t(&indices, index++);
+                }
+                else
+                {
+                    // found, use as is
+                    vector_append_uint32_t(&indices, maybe_index);
+                }
             }
         }
-    } while(status != -1);
+    } while (status != -1);
 
     mesh = mesh_new(
         positions.data, positions.length,
