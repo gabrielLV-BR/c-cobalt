@@ -4,7 +4,6 @@
 #define MAP_DEFAULT_CAPACITY 50
 
 inline uint32_t __vertex_hash(vertex_t vec);
-inline bool __vertex_is_zero(vertex_t v);
 inline bool __vertex_cmp(vertex_t a, vertex_t b);
 
 void __linked_list_delete(linked_list_t* ll);
@@ -32,7 +31,6 @@ void vertex_map_delete(vertex_map_t* map) {
 
 void vertex_map_insert(vertex_map_t* map, vertex_t key, uint32_t value) {
     uint32_t index = __vertex_hash(key);
-    uint32_t index = __vertex_hash(key);
 
     linked_list_t* node = malloc(sizeof(linked_list_t));
     node->key = key;
@@ -48,7 +46,6 @@ void vertex_map_insert(vertex_map_t* map, vertex_t key, uint32_t value) {
 }
 
 uint32_t vertex_map_get(vertex_map_t* map, vertex_t key) {
-    uint32_t index = __vertex_hash(key);
     uint32_t index = __vertex_hash(key);
 
     linked_list_t* node = map->indices[index];
