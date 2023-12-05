@@ -124,7 +124,7 @@ void renderer_render(renderer_t* renderer, scene_t* scene, camera_t* camera) {
 
             model_matrix = transform_get_model_matrix(&model->transform);
 
-            __renderer_bind_material(renderer, material);
+            // __renderer_bind_material(renderer, material);
 
             program_t program = renderer->programs[material->map_count - 1];
 
