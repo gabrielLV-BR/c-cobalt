@@ -6,7 +6,7 @@
 #include "glad/glad.h"
 
 mesh_t mesh_new(
-    vec3_t* vertices, 
+    vertex_t* vertices, 
     int vertex_count, 
     uint32_t* indices, 
     int index_count, 
@@ -19,21 +19,27 @@ mesh_t mesh_new(
 
     glGenBuffers(1, &vbo);
     glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vec3_t) * vertex_count, vertices, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertex_t) * vertex_count, vertices, GL_STATIC_DRAW);
 
     glGenBuffers(1, &ebo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * index_count, indices, GL_STATIC_DRAW);
 
-    int vertex_offset = 0;
-    int uv_offset = 3 * sizeof (float);
-    int stride = 5 * sizeof (float);
+    uint32_t vertex_offset = 0;
+    uint32_t normal_offset = 3 * sizeof (float);
+    uint32_t uv_offset = 6 * sizeof (float);
+    uint32_t stride = 8 * sizeof (float);
 
+    //
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)&vertex_offset);
     glEnableVertexAttribArray(0);
     
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, stride, (void*)&uv_offset);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)&normal_offset);
     glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)&uv_offset);
+    glEnableVertexAttribArray(2);
+    //
 
     glBindVertexArray(0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);

@@ -4,6 +4,7 @@
 #include "material.h"
 #include "math/vec.h"
 
+#include "renderer/vertex.h"
 #include "structs/vector.h"
 
 #include <stdint.h>
@@ -11,7 +12,7 @@
 typedef struct mesh_t {
     uint32_t vao, vbo, ebo;
 
-    vec3_t* vertices;
+    vertex_t* vertices;
     int vertex_count;
 
     int index_count;
@@ -21,7 +22,7 @@ typedef struct mesh_t {
 } mesh_t;
 
 mesh_t mesh_new(
-    vec3_t* vertices, 
+    vertex_t* vertices, 
     int vertex_count, 
     uint32_t* indices, 
     int index_count, 
