@@ -19,7 +19,7 @@
 
 void window_resize_callback(GLFWwindow* window, int width, int height);
 
-int main(void) {
+int main() {
     int WIDTH = 500,
         HEIGHT = 500;
     
@@ -71,38 +71,7 @@ int main(void) {
 
     mesh_t mesh = mesh_loader_load_from_file("assets/models/cube.obj");
 
-    for(int i = 0; i < mesh.vertex_count; i++) {
-        printf("Vertex(%.2f, %.2f, %.2f)\n", mesh.vertices[i].x, mesh.vertices[i].y, mesh.vertices[i].z);
-    }
-
-    for(int i = 0; i < mesh.index_count; i++) {
-        printf("Index: %u%c", mesh.indices[i], (i % 3 == 0 ? '\n' : ' '));
-    }
-
     mesh.material_handle = material_handle;
-
-    // mesh
-
-    // float vertices[] = {
-    //     // positions         // texture coords
-    //      0.5f,  0.5f, 0.0f,  1.0f, 1.0f, // top right
-    //      0.5f, -0.5f, 0.0f,  1.0f, 0.0f, // bottom right
-    //     -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, // bottom left
-    //     -0.5f,  0.5f, 0.0f,  0.0f, 1.0f  // top left 
-    // };
-
-    // uint32_t indices[] = {
-    //     0, 1, 2,
-    //     2, 3, 0
-    // };
-
-    // mesh_t mesh = mesh_new(
-    //     vertices, 
-    //     sizeof vertices / sizeof(float), 
-    //     indices, 
-    //     sizeof indices / sizeof(uint32_t),
-    //     material_handle
-    // );
 
     uint32_t mesh_handle = scene_upload_mesh(&scene, mesh);
 

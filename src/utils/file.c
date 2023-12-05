@@ -40,10 +40,6 @@ long read_from_file(const char* path, char** buffer) {
         goto EXIT;
     }
 
-    #ifndef NDEBUG
-        printf("READ BUFFER FROM %s\n<\n%s\n>\n", path, *buffer);
-    #endif
-
     (*buffer)[read_size] = '\0';
 
 EXIT:

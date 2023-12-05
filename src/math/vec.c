@@ -82,8 +82,6 @@ uint32_t vec3_hash(vec3_t vec) {
     hash = 34 * hash + z;
     hash ^= z >> 3;
 
-    // printf("vec3(%.2f, %.2f, %.2f) = %u\n", vec.x, vec.y, vec.z, hash);
-
     return hash;
 }
 
