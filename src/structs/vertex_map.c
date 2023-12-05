@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include "vertex_map.h"
 
-#define MAP_DEFAULT_CAPACITY 50
-
 inline uint32_t __vertex_hash(vertex_t vec);
 inline bool __vertex_cmp(vertex_t a, vertex_t b);
 
@@ -13,20 +11,16 @@ void __linked_list_append(linked_list_t* ll, vertex_t key, uint32_t value);
 
 vertex_map_t vertex_map_new() {
     vertex_map_t map;
-    // redundant but quite better to utilize
-    map.size = MAP_DEFAULT_CAPACITY;
     map.indices = calloc(MAP_DEFAULT_CAPACITY, sizeof(linked_list_t*));
     return map;
 }
 
-void vertex_map_delete(vertex_map_t* map) {
+void vertex_map_delete(vertex_map_t map) {
     for(int i = 0; i < MAP_DEFAULT_CAPACITY; i++) {
-        linked_list_t* next = map->indices[i]->next;
+        linked_list_t* node = map.indices[i];
 
-        if(next != NULL) __linked_list_delete(next);
+        if(node != NULL) __linked_list_delete(node);
     }
-
-    free(map);
 }
 
 void vertex_map_insert(vertex_map_t* map, vertex_t key, uint32_t value) {
@@ -68,15 +62,8 @@ inline uint32_t __vertex_hash(vertex_t vec) {
     hash += 34 + vec3_hash(vec.position) * hash;
     hash += 23 + vec3_hash(vec.normal) * hash;
     hash += 12 + vec2_hash(vec.uv) * hash;
-    hash += 34 + vec3_hash(vec.position) * hash;
-    hash += 23 + vec3_hash(vec.normal) * hash;
-    hash += 12 + vec2_hash(vec.uv) * hash;
 
     hash %= MAP_DEFAULT_CAPACITY;
-
-    printf("Hash = %u\n", hash);
-
-    printf("Hash = %u\n", hash);
 
     return hash;
 }

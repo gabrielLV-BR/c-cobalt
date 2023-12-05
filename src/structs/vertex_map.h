@@ -9,6 +9,7 @@
 #include "renderer/vertex.h"
 
 #define NOT_FOUND UINT32_MAX
+#define MAP_DEFAULT_CAPACITY 50
 
 typedef struct linked_list_t {
     vertex_t key;
@@ -17,12 +18,11 @@ typedef struct linked_list_t {
 } linked_list_t;
 
 typedef struct vertex_map_t {
-    size_t size;
     linked_list_t** indices;
 } vertex_map_t;
 
 vertex_map_t vertex_map_new();
-void vertex_map_delete(vertex_map_t* map);
+void vertex_map_delete(vertex_map_t map);
 
 void vertex_map_insert(vertex_map_t* map, vertex_t key, uint32_t value);
 uint32_t vertex_map_get(vertex_map_t* map, vertex_t key);

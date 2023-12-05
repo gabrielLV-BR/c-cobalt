@@ -75,8 +75,9 @@ mesh_t mesh_loader_load_from_file(const char* path) {
         char token = line[0];
 
         if(token == 'v') {
+
             parse_vertex(line, &positions, &normals, &uvs);
-        
+
         } else if (token == 'f') {
 
             face_t face = __parse_face_t(line);
@@ -111,19 +112,33 @@ mesh_t mesh_loader_load_from_file(const char* path) {
                 }
             }
         }
+
     } while (status != -1);
 
     mesh = mesh_new(
-        positions.data, positions.length,
+        vertices.data, vertices.length,
         indices.data, indices.length,
         0
     );
+
+    // move vertices and indices into mesh
+    vertices.data = NULL;
+    indices.data = NULL;
 
 EXIT:
 
     if(line) free(line);
 
     fclose(f);
+
+    vertex_map_delete(map);
+
+    vector_destroy_vec3_t(&positions);
+    vector_destroy_vec3_t(&normals);
+    vector_destroy_vec2_t(&uvs);
+
+    vector_destroy_vertex_t(&vertices);
+    vector_destroy_uint32_t(&indices);
 
     return mesh;
 }
