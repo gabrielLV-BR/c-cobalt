@@ -61,23 +61,40 @@ int main() {
     // material
     texture_t texture = texture_load_from_file("assets/textures/chessbloody.png");
 
-    material_t material = {
+    material_t textured_material = {
         .color = (vec3_t) {1},
         .map_count = 1,
         .map_handles = to_uint32_t_array(texture.handle)
     };
 
-    uint32_t material_handle = scene_upload_material(&scene, material);
+    material_t colored_material = {
+        .color = vec3_new(1.0, 0.0, 0.0),
+        .map_count = 0,
+        .map_handles = NULL
+    };
+
+    uint32_t textured_material_handle = scene_upload_material(&scene, textured_material);
+    uint32_t colored_material_handle = scene_upload_material(&scene, colored_material);
 
     mesh_t mesh = mesh_loader_load_from_file("assets/models/cube.obj");
+    mesh.material_handle = colored_material_handle;
 
-    mesh.material_handle = material_handle;
+    vertex_t vertices[] = {
+        { vec3_new(-0.5, -0.5, 0.0), vec3_zero(), vec2_zero() },
+        { vec3_new(0.0, 0.5, 0.0), vec3_zero(), vec2_zero() },
+        { vec3_new(0.5, -0.5, 0.0), vec3_zero(), vec2_zero() },
+    };
+
+    uint32_t indices[] = { 0, 1, 2 };
+
+    mesh_t mesh2 = mesh_new(vertices, 3, indices, 3, colored_material_handle);
 
     uint32_t mesh_handle = scene_upload_mesh(&scene, mesh);
+    uint32_t mesh_handle2 = scene_upload_mesh(&scene, mesh2);
 
     model_t model = {
         .mesh_handle_count = 1,
-        .mesh_handles = &mesh_handle,
+        .mesh_handles = &mesh_handle2,
         .transform = transform_identity()
     };
 
@@ -100,11 +117,23 @@ int main() {
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        renderer_render(
-            &renderer,
-            &scene,
-            &camera
+        glUseProgram(renderer.programs[0].handle);
+        glUniform3f(glGetUniformLocation(renderer.programs[0].handle, "uColor"), 1.0, 0.0, 0.0);
+
+        glBindVertexArray(mesh2.vao);
+
+        glDrawElements(
+            GL_TRIANGLES,
+            mesh2.index_count,
+            GL_UNSIGNED_INT,
+            NULL
         );
+
+        // renderer_render(
+        //     &renderer,
+        //     &scene,
+        //     &camera
+        // );
 
         glfwPollEvents();
         glfwSwapBuffers(renderer.window);
