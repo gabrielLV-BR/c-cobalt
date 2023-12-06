@@ -21,6 +21,7 @@ shader_t shader_read_from_file(const char* path, uint32_t shader_type);
 program_t program_new(shader_t vertex, shader_t fragment);
 void program_destroy(program_t program);
 
+void program_set_vec3(program_t program, const char* name, vec3_t vec);
 void program_set_matrix(program_t program, const char* name, mat4_t matrix);
 void program_set_mvp(program_t program, mat4_t model, mat4_t view, mat4_t proj);
 

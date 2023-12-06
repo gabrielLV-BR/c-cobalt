@@ -38,15 +38,30 @@ void __renderer_load_default_programs(renderer_t* renderer) {
     // it should follow the texture_unit_t enum order
 
     // change manually 
-    renderer->program_count = 1;
+    renderer->program_count = 2;
 
     renderer->programs = calloc(renderer->program_count, sizeof(program_t));
 
-    // 0: diffuse
+    // 0: solid color
 
-    static const char* diff_shader_sources[] = {
-        "assets/shaders/basic.vert.glsl",
-        "assets/shaders/basic.frag.glsl",
+    const char* color_shader_sources[] = {
+        "assets/shaders/color.vert.glsl",
+        "assets/shaders/color.frag.glsl",
+    };
+
+    {
+        shader_t vert_shader = shader_read_from_file(color_shader_sources[0], GL_VERTEX_SHADER);
+        shader_t frag_shader = shader_read_from_file(color_shader_sources[1], GL_FRAGMENT_SHADER);
+        program_t program = program_new(vert_shader, frag_shader);
+
+        renderer->programs[0] = program;
+    }
+
+    // 1: diffuse
+
+    const char* diff_shader_sources[] = {
+        "assets/shaders/diffuse.vert.glsl",
+        "assets/shaders/diffuse.frag.glsl",
     };
 
     {
@@ -54,7 +69,7 @@ void __renderer_load_default_programs(renderer_t* renderer) {
         shader_t frag_shader = shader_read_from_file(diff_shader_sources[1], GL_FRAGMENT_SHADER);
         program_t program = program_new(vert_shader, frag_shader);
 
-        renderer->programs[0] = program;
+        renderer->programs[1] = program;
     }
 }
 
@@ -90,17 +105,10 @@ void renderer_update_screen(renderer_t* renderer, int width, int height) {
     renderer->height = height;
 }
 
-void __renderer_bind_material(renderer_t* renderer, material_t* material) {
-    uint32_t material_program = material->map_count - 1;
-
-    if(material_program > renderer->program_count) {
-        ERROR("When binding material to program on renderer");
-        return;
-    }
-
-    program_t program = renderer->programs[material_program];
-
+void __renderer_bind_material(renderer_t* renderer, program_t program, material_t* material) {
     glUseProgram(program.handle);
+
+    program_set_vec3(program, "uColor", material->color);
 
     for(int i = 0; i < material->map_count; i++) {
         program_set_texture_unit(program, texture_unit_name(i), i);
@@ -122,12 +130,11 @@ void renderer_render(renderer_t* renderer, scene_t* scene, camera_t* camera) {
             uint32_t material_handle = mesh->material_handle;
             material_t* material = &scene->materials.data[material_handle];
 
+            program_t program = renderer->programs[material->map_count];
+
+            __renderer_bind_material(renderer, program, material);
+
             model_matrix = transform_get_model_matrix(&model->transform);
-
-            // __renderer_bind_material(renderer, material);
-
-            program_t program = renderer->programs[material->map_count - 1];
-
             program_set_mvp(
                 program, 
                 model_matrix, 

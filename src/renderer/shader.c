@@ -97,6 +97,19 @@ program_t program_new(shader_t vertex, shader_t fragment) {
     return (program_t) {.handle = program};
 }
 
+void program_set_vec3(program_t program, const char* name, vec3_t vec) {
+    //TODO cache
+
+    int location = glGetUniformLocation(program.handle, name);
+
+    if(location == -1) {
+        ERROR("When setting uniforms");
+        return;
+    }
+
+    glUniform3f(location, vec.x, vec.y, vec.z);
+}
+
 void program_set_matrix(program_t program, const char* name, mat4_t matrix) {
     //TODO cache
 
