@@ -74,7 +74,7 @@ inline bool __vertex_cmp(vertex_t a, vertex_t b) {
         && vec2_cmp(a.uv, b.uv);
 }
 
-void __debug_vertex_map_print(vertex_map_t map) {
+void debug__vertex_map_print(vertex_map_t map) {
     for(int i = 0; i < MAP_DEFAULT_CAPACITY; i++) {
         linked_list_t* node = map.indices[i];
 

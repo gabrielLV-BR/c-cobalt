@@ -28,6 +28,6 @@ mat4_t mat4_look_at(const vec3_t* direction, const vec3_t* up, const vec3_t* rig
 
 // debug
 
-void mat4_print(mat4_t mat);
+void debug__mat4_print(mat4_t mat);
 
 #endif // MATRIX_H

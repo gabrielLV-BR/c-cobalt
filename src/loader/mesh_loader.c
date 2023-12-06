@@ -44,7 +44,6 @@ face_t  __parse_face_t(const char* token);
 mesh_t mesh_loader_load_from_file(const char* path) {
     FILE* f = fopen(path, "r");
     char* line = NULL;
-    int status = 0;
     size_t size = 0;
 
     mesh_t mesh = {0};
@@ -62,9 +61,7 @@ mesh_t mesh_loader_load_from_file(const char* path) {
 
     if (f == NULL) goto EXIT;
 
-    do {
-        status = getline(&line, &size, f);        
-
+    for(int status = 0 ; status != -1 ; status = getline(&line, &size, f) ) {
         if (!line) continue;
 
         char token = line[0];
@@ -104,9 +101,8 @@ mesh_t mesh_loader_load_from_file(const char* path) {
                 }
             }
         }
-
-    } while (status != -1);
-
+    }
+    
     mesh = mesh_new(
         vertices.data, vertices.length,
         indices.data, indices.length,

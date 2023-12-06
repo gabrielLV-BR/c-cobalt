@@ -29,6 +29,6 @@ uint32_t vertex_map_get(vertex_map_t map, vertex_t key);
 
 // debug
 
-void __debug_vertex_map_print(vertex_map_t map);
+void debug__vertex_map_print(vertex_map_t map);
 
 #endif // __vertex_map_h__

@@ -34,7 +34,7 @@ mat4_t mat4_multiply(mat4_t a, mat4_t b) {
     return result;
 }
 
-void mat4_print(mat4_t mat) {
+void debug__mat4_print(mat4_t mat) {
     printf("Matrix:\n");
     for(int i = 0; i < 4; i++) {
         for(int j = 0; j < 4; j++) {
