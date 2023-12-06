@@ -35,13 +35,6 @@ void parse_vertex(
     vector_vec2_t* uvs
 );
 
-void insert_vertex(
-    vertex_t vertex,
-    vertex_map_t* map,
-    vector_vertex_t* vertices,
-    vector_uint32_t* indices
-);
-
 vec3_t  __parse_vec3_t(const char* token);
 vec2_t  __parse_vec2_t(const char* token);
 face_t  __parse_face_t(const char* token);
@@ -65,6 +58,8 @@ mesh_t mesh_loader_load_from_file(const char* path) {
 
     vertex_map_t map = vertex_map_new();
 
+    uint32_t index = 0;
+
     if (f == NULL) goto EXIT;
 
     do {
@@ -82,13 +77,10 @@ mesh_t mesh_loader_load_from_file(const char* path) {
 
             face_t face = __parse_face_t(line);
 
-            uint32_t index = 0;
-            uint32_t maybe_index = 0;
-
             for(int i = 0; i < 3; i ++) {
-                size_t position_index = face.v_position[i] - 1;
-                size_t normal_index = face.v_normal[i] - 1;
-                size_t uv_index = face.v_uv[i] - 1;
+                uint32_t position_index = face.v_position[i] - 1;
+                uint32_t normal_index = face.v_normal[i] - 1;
+                uint32_t uv_index = face.v_uv[i] - 1;
 
                 vertex_t vertex = {
                     positions.data[position_index],
@@ -96,12 +88,12 @@ mesh_t mesh_loader_load_from_file(const char* path) {
                     uvs.data[uv_index]
                 };
 
-                maybe_index = vertex_map_get(&map, vertex);
+                uint32_t maybe_index = vertex_map_get(map, vertex);
 
                 if (maybe_index == NOT_FOUND)
                 {
                     // not found, must insert
-                    vertex_map_insert(&map, vertex, index);
+                    vertex_map_insert(map, vertex, index);
                     vector_append_vertex_t(&vertices, vertex);
                     vector_append_uint32_t(&indices, index++);
                 }
@@ -166,26 +158,6 @@ void parse_vertex(const char* line, vector_vec3_t* positions, vector_vec3_t* nor
     }
 }
 
-void insert_vertex(
-    vertex_t vertex,
-    vertex_map_t* map,
-    vector_vertex_t* vertices,
-    vector_uint32_t* indices
-) {
-    uint32_t index = 0;
-    uint32_t maybe_index = vertex_map_get(map, vertex);
-    
-    if(maybe_index == NOT_FOUND) {
-        // not found, must insert
-        vertex_map_insert(map, vertex, index);
-        vector_append_vertex_t(vertices, vertex);
-        vector_append_uint32_t(indices, index++);
-    } else {
-        // found, use as is
-        vector_append_uint32_t(indices, maybe_index);
-    }
-}
-
 // utility
 
 vec3_t __parse_vec3_t(const char* token) {
@@ -216,9 +188,9 @@ face_t __parse_face_t(const char* token) {
     sscanf(
         token, 
         "%*s %ld/%ld/%ld %ld/%ld/%ld %ld/%ld/%ld", 
-        &face.v_position[0], &face.v_normal[0], &face.v_uv[0],
-        &face.v_position[1], &face.v_normal[1], &face.v_uv[1],
-        &face.v_position[2], &face.v_normal[2], &face.v_uv[2]
+        &face.v_position[0], &face.v_uv[0], &face.v_normal[0],
+        &face.v_position[1], &face.v_uv[1], &face.v_normal[1],
+        &face.v_position[2], &face.v_uv[2], &face.v_normal[2]
     );
 
     return face;

@@ -24,7 +24,11 @@ typedef struct vertex_map_t {
 vertex_map_t vertex_map_new();
 void vertex_map_delete(vertex_map_t map);
 
-void vertex_map_insert(vertex_map_t* map, vertex_t key, uint32_t value);
-uint32_t vertex_map_get(vertex_map_t* map, vertex_t key);
+void vertex_map_insert(vertex_map_t map, vertex_t key, uint32_t value);
+uint32_t vertex_map_get(vertex_map_t map, vertex_t key);
+
+// debug
+
+void __debug_vertex_map_print(vertex_map_t map);
 
 #endif // __vertex_map_h__

@@ -23,7 +23,7 @@ void vertex_map_delete(vertex_map_t map) {
     }
 }
 
-void vertex_map_insert(vertex_map_t* map, vertex_t key, uint32_t value) {
+void vertex_map_insert(vertex_map_t map, vertex_t key, uint32_t value) {
     uint32_t index = __vertex_hash(key);
 
     linked_list_t* node = malloc(sizeof(linked_list_t));
@@ -31,18 +31,18 @@ void vertex_map_insert(vertex_map_t* map, vertex_t key, uint32_t value) {
     node->value = value;
     node->next = NULL;
 
-    if(map->indices[index] == NULL) {
-        map->indices[index] = node;
+    if(map.indices[index] == NULL) {
+        map.indices[index] = node;
     } else {
-        node->next = map->indices[index];
-        map->indices[index] = node;
+        node->next = map.indices[index];
+        map.indices[index] = node;
     }
 }
 
-uint32_t vertex_map_get(vertex_map_t* map, vertex_t key) {
+uint32_t vertex_map_get(vertex_map_t map, vertex_t key) {
     uint32_t index = __vertex_hash(key);
 
-    linked_list_t* node = map->indices[index];
+    linked_list_t* node = map.indices[index];
     while(node != NULL) {
         if(__vertex_cmp(node->key, key) == true) {
             return node->value;
@@ -72,6 +72,27 @@ inline bool __vertex_cmp(vertex_t a, vertex_t b) {
     return vec3_cmp(a.position, b.position)
         && vec3_cmp(a.normal, b.normal)
         && vec2_cmp(a.uv, b.uv);
+}
+
+void __debug_vertex_map_print(vertex_map_t map) {
+    for(int i = 0; i < MAP_DEFAULT_CAPACITY; i++) {
+        linked_list_t* node = map.indices[i];
+
+        if(node == NULL) {
+            printf("_\n");
+            continue;
+        }
+
+        while(node != NULL) {
+            printf("{ %u : %u }", __vertex_hash(node->key), node->value);
+            
+            node = node->next;
+
+            if(node != NULL) printf("->");
+        }
+
+        printf("\n");
+    }
 }
 
 // linked list
