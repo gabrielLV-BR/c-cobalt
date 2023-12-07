@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include "vertex_map.h"
 
-inline uint32_t __vertex_hash(vertex_t vec);
-inline bool __vertex_cmp(vertex_t a, vertex_t b);
+uint32_t __vertex_hash(vertex_t vec);
+bool __vertex_cmp(vertex_t a, vertex_t b);
 
 void __linked_list_delete(linked_list_t* ll);
-void __linked_list_append(linked_list_t* ll, vertex_t key, uint32_t value);
 
 //
 
