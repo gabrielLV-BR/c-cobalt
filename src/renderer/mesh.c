@@ -31,13 +31,13 @@ mesh_t mesh_new(
     uint32_t stride = 8 * sizeof (float);
 
     //
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)&vertex_offset);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)vertex_offset);
     glEnableVertexAttribArray(0);
     
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)&normal_offset);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)normal_offset);
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)&uv_offset);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)uv_offset);
     glEnableVertexAttribArray(2);
     //
 
