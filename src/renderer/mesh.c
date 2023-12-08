@@ -1,5 +1,6 @@
 #include "mesh.h"
 
+#include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
 
@@ -25,19 +26,14 @@ mesh_t mesh_new(
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint32_t) * index_count, indices, GL_STATIC_DRAW);
 
-    uint32_t vertex_offset = 0;
-    uint32_t normal_offset = 3 * sizeof (float);
-    uint32_t uv_offset = 6 * sizeof (float);
-    uint32_t stride = 8 * sizeof (float);
-
     //
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, stride, (void*)vertex_offset);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*) offsetof(vertex_t, position));
     glEnableVertexAttribArray(0);
     
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, stride, (void*)normal_offset);
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*) offsetof(vertex_t, normal));
     glEnableVertexAttribArray(1);
 
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, stride, (void*)uv_offset);
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(vertex_t), (void*) offsetof(vertex_t, uv));
     glEnableVertexAttribArray(2);
     //
 
