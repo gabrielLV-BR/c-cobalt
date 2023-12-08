@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-#include "glad/glad.h"
+#include "glad/gl.h"
 
 #include "shader.h"
 #include "renderer.h"
@@ -20,7 +20,7 @@ GLFWwindow* __renderer_init_window(int width, int height, const char* title) {
 int __renderer_init_opengl(GLFWwindow* window) {
     glfwMakeContextCurrent(window);
 
-    if(!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
+    if(!gladLoadGL(glfwGetProcAddress)) {
         return -1;
     }
 

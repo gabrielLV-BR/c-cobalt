@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "glad/glad.h"
+#include "glad/gl.h"
 
 mesh_t mesh_new(
     vertex_t* vertices, 

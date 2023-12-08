@@ -1,7 +1,7 @@
 #include "renderer/material.h"
 #include "renderer/texture.h"
 
-#include "glad/glad.h"
+#include "glad/gl.h"
 #include "utils/error.h"
 #include "utils/file.h"
 #include "math/functions.h"

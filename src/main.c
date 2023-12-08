@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "glad/glad.h"
+#include "glad/gl.h"
 #include <GLFW/glfw3.h>
 
 #include "math/matrix.h"
@@ -16,6 +16,7 @@
 
 #include "utils/error.h"
 #include "utils/arr.h"
+#include "utils/file.h"
 
 void window_resize_callback(GLFWwindow* window, int width, int height);
 
@@ -68,7 +69,7 @@ int main() {
     };
 
     material_t colored_material = {
-        .color = vec3_new(1.0, 0.0, 0.0),
+        .color = vec3_new(1.0, 1.0, 0.0),
         .map_count = 0,
         .map_handles = NULL
     };
@@ -118,22 +119,22 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(renderer.programs[0].handle);
-        glUniform3f(glGetUniformLocation(renderer.programs[0].handle, "uColor"), 1.0, 0.0, 0.0);
+        glUniform3f(glGetUniformLocation(renderer.programs[0].handle, "uColor"), 1.0, 1.0, 0.0);
 
-        glBindVertexArray(mesh2.vao);
+        // glBindVertexArray(vao);
 
-        glDrawElements(
-            GL_TRIANGLES,
-            mesh2.index_count,
-            GL_UNSIGNED_INT,
-            NULL
-        );
-
-        // renderer_render(
-        //     &renderer,
-        //     &scene,
-        //     &camera
+        // glDrawElements(
+        //     GL_TRIANGLES,
+        //     3,
+        //     GL_UNSIGNED_INT,
+        //     NULL
         // );
+
+        renderer_render(
+            &renderer,
+            &scene,
+            &camera
+        );
 
         glfwPollEvents();
         glfwSwapBuffers(renderer.window);

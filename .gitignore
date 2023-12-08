@@ -1,12 +1,12 @@
 .vscode/
 .xmake/
+.venv/
 
 game
 cobalt
 
 *.out
-**/*.o
-vendor/*/*
+vendor/
 
 build/
 

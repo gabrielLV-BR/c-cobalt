@@ -2,8 +2,10 @@
 #include "renderer/material.h"
 #include "utils/error.h"
 
+#define STB_IMAGE_IMPLEMENTATION
 #include "stb/stb_image.h"
-#include "glad/glad.h"
+
+#include "glad/gl.h"
 
 texture_t texture_load_from_file(const char* path) {
     int width, height, channels;
