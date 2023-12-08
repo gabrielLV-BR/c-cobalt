@@ -69,29 +69,29 @@ int main() {
     };
 
     material_t colored_material = {
-        .color = vec3_new(1.0, 1.0, 0.0),
+        .color = vec3_new(1.0, 1.0, 1.0),
         .map_count = 0,
         .map_handles = NULL
     };
 
-    uint32_t textured_material_handle = scene_upload_material(&scene, textured_material);
-    uint32_t colored_material_handle = scene_upload_material(&scene, colored_material);
+    uint32_t textured_material_handle = scene_upload_material(scene, textured_material);
+    uint32_t colored_material_handle = scene_upload_material(scene, colored_material);
 
     mesh_t mesh = mesh_loader_load_from_file("assets/models/cube.obj");
     mesh.material_handle = colored_material_handle;
 
     vertex_t vertices[] = {
-        { vec3_new(-0.5, -0.5, 0.0), vec3_zero(), vec2_zero() },
-        { vec3_new(0.0, 0.5, 0.0), vec3_zero(), vec2_zero() },
-        { vec3_new(0.5, -0.5, 0.0), vec3_zero(), vec2_zero() },
+        { {-0.5, -0.5, 0.0}, vec3_zero(), vec2_zero() },
+        { {0.0, 0.5, 0.0},  vec3_zero(), vec2_zero() },
+        { {0.5, -0.5, 0.0},  vec3_zero(), vec2_zero() },
     };
 
     uint32_t indices[] = { 0, 1, 2 };
 
     mesh_t mesh2 = mesh_new(vertices, 3, indices, 3, colored_material_handle);
 
-    uint32_t mesh_handle = scene_upload_mesh(&scene, mesh);
-    uint32_t mesh_handle2 = scene_upload_mesh(&scene, mesh2);
+    uint32_t mesh_handle = scene_upload_mesh(scene, mesh);
+    uint32_t mesh_handle2 = scene_upload_mesh(scene, mesh2);
 
     model_t model = {
         .mesh_handle_count = 1,
@@ -99,8 +99,7 @@ int main() {
         .transform = transform_identity()
     };
 
-    scene_upload_model(&scene, model);
-
+    scene_upload_model(scene, model);
     //
 
     double now = glfwGetTime();
@@ -118,18 +117,6 @@ int main() {
 
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(renderer.programs[0].handle);
-        glUniform3f(glGetUniformLocation(renderer.programs[0].handle, "uColor"), 1.0, 1.0, 0.0);
-
-        // glBindVertexArray(vao);
-
-        // glDrawElements(
-        //     GL_TRIANGLES,
-        //     3,
-        //     GL_UNSIGNED_INT,
-        //     NULL
-        // );
-
         renderer_render(
             &renderer,
             &scene,
@@ -140,7 +127,7 @@ int main() {
         glfwSwapBuffers(renderer.window);
     }
 
-    scene_destroy(&scene);
+    scene_destroy(scene);
     renderer_destroy(&renderer);
 
     glfwDestroyWindow(renderer.window);

@@ -16,23 +16,37 @@ scene_t scene_load_from_file(const char* path) {
 
 }
 
-uint32_t scene_upload_mesh(scene_t* scene, mesh_t mesh) {
-    vector_append_mesh_t(&scene->meshes, mesh);
-    return scene->meshes.length - 1;
+uint32_t scene_upload_mesh(scene_t scene, mesh_t mesh) {
+    vector_append_mesh_t(&scene.meshes, mesh);
+    return scene.meshes.length - 1;
 }
 
-uint32_t scene_upload_material(scene_t* scene, material_t material) {
-    vector_append_material_t(&scene->materials, material);
-    return scene->materials.length - 1;
+uint32_t scene_upload_material(scene_t scene, material_t material) {
+    vector_append_material_t(&scene.materials, material);
+    return scene.materials.length - 1;
 }
 
-uint32_t scene_upload_model(scene_t* scene, model_t model) {
-    vector_append_model_t(&scene->models, model);
-    return scene->models.length - 1;
+uint32_t scene_upload_model(scene_t scene, model_t model) {
+    vector_append_model_t(&scene.models, model);
+    return scene.models.length - 1;
 }
 
-void scene_destroy(scene_t* scene) {
-    vector_destroy_mesh_t(&scene->meshes);
-    vector_destroy_model_t(&scene->models);
-    vector_destroy_material_t(&scene->materials);
+//
+
+mesh_t* scene_get_mesh(scene_t scene, uint32_t handle) {
+    return &scene.meshes.data[handle];
+}
+
+model_t* scene_get_model(scene_t scene, uint32_t handle) {
+    return &scene.models.data[handle];
+}
+
+material_t* scene_get_material(scene_t scene, uint32_t handle) {
+    return &scene.materials.data[handle];
+}
+
+void scene_destroy(scene_t scene) {
+    vector_destroy_mesh_t(&scene.meshes);
+    vector_destroy_model_t(&scene.models);
+    vector_destroy_material_t(&scene.materials);
 }
