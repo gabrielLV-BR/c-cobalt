@@ -75,7 +75,11 @@ shader_t shader_read_from_file(const char* path, uint32_t shader_type) {
 
     read_from_file(path, &source);
 
-    return shader_new(source, shader_type);
+    shader_t shader = shader_new(source, shader_type);
+
+    free(source);
+
+    return shader;
 }
 
 program_t program_new(shader_t vertex, shader_t fragment) {

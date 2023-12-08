@@ -55,6 +55,9 @@ void __renderer_load_default_programs(renderer_t* renderer) {
         program_t program = program_new(vert_shader, frag_shader);
 
         renderer->programs[0] = program;
+
+        glDeleteShader(vert_shader.handle);
+        glDeleteShader(frag_shader.handle);
     }
 
     // 1: diffuse
@@ -70,6 +73,9 @@ void __renderer_load_default_programs(renderer_t* renderer) {
         program_t program = program_new(vert_shader, frag_shader);
 
         renderer->programs[1] = program;
+
+        glDeleteShader(vert_shader.handle);
+        glDeleteShader(frag_shader.handle);
     }
 }
 
