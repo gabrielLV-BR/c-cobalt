@@ -74,8 +74,8 @@ int main() {
         .map_handles = NULL
     };
 
-    uint32_t textured_material_handle = scene_upload_material(scene, textured_material);
-    uint32_t colored_material_handle = scene_upload_material(scene, colored_material);
+    uint32_t textured_material_handle = scene_upload_material(&scene, textured_material);
+    uint32_t colored_material_handle = scene_upload_material(&scene, colored_material);
 
     mesh_t mesh = mesh_loader_load_from_file("assets/models/cube.obj");
     mesh.material_handle = colored_material_handle;
@@ -90,8 +90,8 @@ int main() {
 
     mesh_t mesh2 = mesh_new(vertices, 3, indices, 3, colored_material_handle);
 
-    uint32_t mesh_handle = scene_upload_mesh(scene, mesh);
-    uint32_t mesh_handle2 = scene_upload_mesh(scene, mesh2);
+    uint32_t mesh_handle = scene_upload_mesh(&scene, mesh);
+    uint32_t mesh_handle2 = scene_upload_mesh(&scene, mesh2);
 
     model_t model = {
         .mesh_handle_count = 1,
@@ -99,7 +99,7 @@ int main() {
         .transform = transform_identity()
     };
 
-    scene_upload_model(scene, model);
+    scene_upload_model(&scene, model);
     //
 
     double now = glfwGetTime();
