@@ -80,6 +80,24 @@ int main() {
     mesh_t mesh = mesh_loader_load_from_file("assets/models/cube.obj");
     mesh.material_handle = colored_material_handle;
 
+    for(int i = 0; i < mesh.vertex_count; i++) {
+        printf("v %.2f %.2f %.2f\n", mesh.vertices[i].position.x, mesh.vertices[i].position.y, mesh.vertices[i].position.z);
+    }
+
+
+    for(int i = 0; i < mesh.vertex_count; i++) {
+        printf("vn %.2f %.2f %.2f\n", mesh.vertices[i].normal.x, mesh.vertices[i].normal.y, mesh.vertices[i].normal.z);
+    }
+
+    for(int i = 0; i < mesh.vertex_count; i++) {
+        printf("vt %.2f %.2f\n", mesh.vertices[i].uv.x, mesh.vertices[i].uv.y);
+    }
+
+    for(int i = 0; i < mesh.index_count - 3; i += 3) {
+        printf("f %d %d %d\n", mesh.indices[i], mesh.indices[i + 1], mesh.indices[i + 2]);
+    }
+
+
     vertex_t vertices[] = {
         { {-0.5, -0.5, 0.0}, vec3_zero(), vec2_zero() },
         { {0.0, 0.5, 0.0},  vec3_zero(), vec2_zero() },
@@ -95,7 +113,7 @@ int main() {
 
     model_t model = {
         .mesh_handle_count = 1,
-        .mesh_handles = &mesh_handle2,
+        .mesh_handles = &mesh_handle,
         .transform = transform_identity()
     };
 

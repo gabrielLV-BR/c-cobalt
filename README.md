@@ -9,6 +9,7 @@ It currently lacks basic behaviour that you'd expect from an engine, but we're b
 # Features
 
 - It can render stuff
+- It can't for the life of it load models
 
 That's about it :thumbsup:
 
@@ -29,10 +30,11 @@ It should be clear by this list that I'm very lost but very passionate about thi
 
 > :warning: Currently, even I'm having problems with this
 
-Make sure you have `git`, `glfw` system packages, adequate drivers for `opengl` and `xmake`
+Make sure you have `git`, `cmake`, `glfw` system packages and adequate drivers for `opengl`
 
-- Clone the repo
-- Run `xmake` to build
-- Run `xmake run` to run
+- Clone the repo and `cd` into it
+- Run `cmake -S . -B build` to create the build files inside `build/`
+- `cd` into `build/`
+- Run `make` and run `cobalt` target
 
-Should be that simple, although it currently isn't
+Currently, there's also the need to symlink the `assets/` folder in the project's root to `build/assets/`, so the built target can access it. (May fix it later)
