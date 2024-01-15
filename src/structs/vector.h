@@ -69,7 +69,7 @@
 
 #define __VECTOR_IMPLEMENT_FIT(type)                                \
     void vector_fit_##type(vector_##type* vec) {                    \
-        realloc(vec->data, vec->length * sizeof(type));             \
+        vec->data = realloc(vec->data, vec->length * sizeof(type)); \
     }
 
 // USE THESE
