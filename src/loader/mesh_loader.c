@@ -14,11 +14,7 @@
 
 #define DEFAULT_VECTOR_SIZE 100
 
-typedef struct {
-    int v_position_count;
-    int v_normal_count;
-    int v_uv_count;
-} count_result_t;
+// internal data types
 
 typedef struct {
     size_t v_position[3];
@@ -26,14 +22,19 @@ typedef struct {
     size_t v_uv[3];
 } face_t;
 
+VECTOR_DEFINE(face_t)
+VECTOR_IMPLEMENT(face_t)
+
+typedef struct {
+    vector_vec3_t positions;
+    vector_vec3_t normals;
+    vector_vec2_t uvs;
+    vector_face_t faces;
+} obj_data_t;
+
 // fd decl
 
-void parse_vertex(
-    const char* line, 
-    vector_vec3_t* positions,
-    vector_vec3_t* normals,
-    vector_vec2_t* uvs
-);
+obj_data_t parse_object_data(char* source);
 
 vec3_t  __parse_vec3_t(const char* token);
 vec2_t  __parse_vec2_t(const char* token);
@@ -42,116 +43,144 @@ face_t  __parse_face_t(const char* token);
 //
 
 mesh_t mesh_loader_load_from_file(const char* path) {
-    FILE* f = fopen(path, "r");
-    char* line = NULL;
-    size_t size = 0;
+    char* file_contents;
+    long bytes_read;
 
-    mesh_t mesh = {0};
+    bytes_read = read_from_file(path, &file_contents);
 
-    vector_vec3_t positions = vector_new_vec3_t(DEFAULT_VECTOR_SIZE);
-    vector_vec3_t normals   = vector_new_vec3_t(DEFAULT_VECTOR_SIZE);
-    vector_vec2_t uvs       = vector_new_vec2_t(DEFAULT_VECTOR_SIZE);
+    if (bytes_read == -1) {
+        ERROR("When reading source from obj file");
+        goto EXIT;
+    }
 
-    vector_vertex_t vertices = vector_new_vertex_t(DEFAULT_VECTOR_SIZE);
-    vector_uint32_t indices  = vector_new_uint32_t(DEFAULT_VECTOR_SIZE);
+    obj_data_t obj_data = parse_object_data(file_contents);
 
-    vertex_map_t map = vertex_map_new();
+    vector_vertex_t vertices = vector_new_vertex_t(10);
+    vector_uint32_t indices  = vector_new_uint32_t(10);
+
+    vertex_map_t vertex_map  = vertex_map_new();
+
+    // generate indices
 
     uint32_t index = 0;
 
-    if (f == NULL) goto EXIT;
+    for(int i = 0; i < indices.length; i++) {
+        face_t* face = &obj_data.faces.data[i];
 
-    for(int status = 0 ; status != -1 ; status = getline(&line, &size, f) ) {
-        if (!line) continue;
+        for(int j = 0; j < 3; j++) {
+            size_t position_index = face->v_position[j] - 1;
+            size_t normal_index = face->v_normal[j] - 1;
+            size_t uv_index = face->v_uv[j] - 1;
 
-        char token = line[0];
+            vec3_t position = obj_data.positions.data[position_index];
+            vec3_t normal   = obj_data.normals.data[normal_index];
+            vec2_t uv       = obj_data.uvs.data[uv_index];
 
-        if(token == 'v') {
+            vertex_t vertex = {
+                .position = position,
+                .normal = normal,
+                .uv = uv
+            };
 
-            parse_vertex(line, &positions, &normals, &uvs);
+            uint32_t maybe_index = vertex_map_get(&vertex_map, vertex);
 
-        } else if (token == 'f') {
+            if(maybe_index == NOT_FOUND) {
+                // must insert index
 
-            face_t face = __parse_face_t(line);
+                vertex_map_insert(&vertex_map, vertex, index);
+                vector_append_vertex_t(&vertices, vertex);
+                vector_append_uint32_t(&indices, index);
+                index++;
 
-            for(int i = 0; i < 3; i ++) {
-                uint32_t position_index = face.v_position[i] - 1;
-                uint32_t normal_index = face.v_normal[i] - 1;
-                uint32_t uv_index = face.v_uv[i] - 1;
-
-                vertex_t vertex = {
-                    positions.data[position_index],
-                    normals.data[normal_index],
-                    uvs.data[uv_index]
-                };
-
-                uint32_t maybe_index = vertex_map_get(map, vertex);
-
-                if (maybe_index == NOT_FOUND)
-                {
-                    // not found, must insert
-                    vertex_map_insert(map, vertex, index);
-                    vector_append_vertex_t(&vertices, vertex);
-                    vector_append_uint32_t(&indices, index++);
-                }
-                else
-                {
-                    // found, use as is
-                    vector_append_uint32_t(&indices, maybe_index);
-                }
+            } else {
+                // found
+                vector_append_uint32_t(&indices, maybe_index);
             }
         }
     }
+
+    vector_fit_vertex_t(&vertices);
+    vector_fit_uint32_t(&indices);
+
+    //
     
+    mesh_t mesh = {};
+
     mesh = mesh_new(
-        vertices.data, vertices.length,
-        indices.data, indices.length,
+        vertices.data, vertices.length, 
+        indices.data, indices.length, 
         0
     );
 
-    // move vertices and indices into mesh
-    vertices.data = NULL;
-    indices.data = NULL;
+    /*
+        We don't free vertices and indices because we "moved" them into mesh.
+        Now mesh is responsible for the pointer's lifetime, and since the
+        `vector` does not contain any other pointer, we can skip freeing it.
+
+        Were we not to skip it, we should set its data pointer to null.
+
+        vertices.data = NULL;
+        indices.data = NULL;
+    */
+
+    // freeing
+
+    vector_destroy_vec3_t(&obj_data.positions);
+    vector_destroy_vec3_t(&obj_data.normals);
+    vector_destroy_vec2_t(&obj_data.uvs);
+    vector_destroy_face_t(&obj_data.faces);
 
 EXIT:
 
-    if(line) free(line);
-
-    fclose(f);
-
-    vertex_map_delete(map);
-
-    vector_destroy_vec3_t(&positions);
-    vector_destroy_vec3_t(&normals);
-    vector_destroy_vec2_t(&uvs);
-
-    vector_destroy_vertex_t(&vertices);
-    vector_destroy_uint32_t(&indices);
+    free(file_contents);
 
     return mesh;
 }
 
-void parse_vertex(const char* line, vector_vec3_t* positions, vector_vec3_t* normals, vector_vec2_t* uvs) {
+obj_data_t parse_object_data(char* source) {
+    obj_data_t obj_data = {};
+    obj_data.positions  = vector_new_vec3_t(DEFAULT_VECTOR_SIZE);
+    obj_data.normals    = vector_new_vec3_t(DEFAULT_VECTOR_SIZE);
+    obj_data.uvs        = vector_new_vec2_t(DEFAULT_VECTOR_SIZE);
+    obj_data.faces      = vector_new_face_t(DEFAULT_VECTOR_SIZE);
 
-    // type:
-    // - ' ' : position
-    // - 'n' : normal
-    // - 't' : uv
+    char* token = strtok(source, NEW_LINE);
 
-    char type = line[1];
+    do {
 
-    if(type == ' ') {
-        vec3_t position = __parse_vec3_t(line);
-        vector_append_vec3_t(positions, position);
-    } 
-    else if(type == 'n') {
-        vec3_t normal = __parse_vec3_t(line);
-        vector_append_vec3_t(normals, normal);
-    }
-    else if(type == 't') {
-        vec2_t uv = __parse_vec2_t(line);
-        vector_append_vec2_t(uvs, uv);
-    }
+        char first_char = token[0];
+        char second_char = token[1];
+
+        if(first_char == 'v') {
+            if(second_char == 't') {
+                // vec 2
+                vec2_t vertex = __parse_vec2_t(token);
+
+                vector_append_vec2_t(&obj_data.uvs, vertex);
+
+            } else {
+                // vec 3
+                vec3_t vertex = __parse_vec3_t(token);
+
+                switch (second_char) {
+                    case ' ':
+                        vector_append_vec3_t(&obj_data.positions, vertex);
+                        break;
+                    case 'n':
+                        vector_append_vec3_t(&obj_data.normals, vertex);
+                        break;
+                }
+            }
+        } else if (first_char == 'f') {
+            // face
+            face_t face = __parse_face_t(token);
+
+            vector_append_face_t(&obj_data.faces, face);
+        }
+
+    } while(token = strtok(NULL, NEW_LINE));
+
+    return obj_data;
 }
 
 // utility
