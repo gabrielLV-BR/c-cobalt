@@ -2,6 +2,8 @@
 #define __vector_h__
 
 #include "utils/error.h"
+#include "utils/macros.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <memory.h>
@@ -15,16 +17,17 @@
     } vector_##type;
 
 #define __VECTOR_DEFINE_FUNCS(type)                                 \
-    vector_##type vector_new_##type(int initial_size);              \
+    vector_##type vector_new_##type(size_t initial_size);           \
     void vector_append_##type(vector_##type* vec, type data);       \
     void vector_destroy_##type(vector_##type* vec);                 \
     void vector_recursive_destroy_##type(vector_##type* vec);       \
+    void vector_resize_##type(vector_##type* vec, size_t size);     \
     void vector_fit_##type(vector_##type* vec);
 
 // IMPLEMENTATIONS
 
 #define __VECTOR_IMPLEMENT_NEW(type)                                \
-    vector_##type vector_new_##type(int initial_size) {             \
+    vector_##type vector_new_##type(size_t initial_size) {          \
         type *data = calloc(initial_size, sizeof(type));            \
                                                                     \
         if(!data) {                                                 \
@@ -41,10 +44,10 @@
     }
 
 #define __VECTOR_IMPLEMENT_APPEND(type)                             \
-    void vector_append_##type(vector_##type* vec, type data) {   \
+    void vector_append_##type(vector_##type* vec, type data) {      \
         if(vec->capacity < (vec->length + 1)) {                     \
             vec->capacity *= 2;                                     \
-            int next_size = vec->capacity * sizeof(type);           \
+            size_t next_size = vec->capacity * sizeof(type);        \
             vec->data = realloc(vec->data, next_size);              \
         }                                                           \
                                                                     \
@@ -62,10 +65,18 @@
 
 #define __VECTOR_IMPLEMENT_RECURSIVE_DESTROY(type)                  \
     void vector_recursive_destroy_##type(vector_##type* vec) {      \
-        for(int i = 0; i < vec->length; i++)                        \
+        for(size_t i = 0; i < vec->length; i++)                     \
             free(vec->data[i]);                                     \
         free(vec->data);                                            \
     }
+
+#define __VECTOR_IMPLEMENT_RESIZE(type)                             \
+    void vector_resize_##type(vector_##type* vec, size_t size) {    \
+        vec->data = realloc(vec->data, size * sizeof(type));        \
+        vec->capacity = size;                                       \
+        vec->length = MIN(vec->length, size);                       \
+    }
+
 
 #define __VECTOR_IMPLEMENT_FIT(type)                                \
     void vector_fit_##type(vector_##type* vec) {                    \
@@ -82,6 +93,7 @@
     __VECTOR_IMPLEMENT_NEW(type)                                    \
     __VECTOR_IMPLEMENT_APPEND(type)                                 \
     __VECTOR_IMPLEMENT_DESTROY(type)                                \
+    __VECTOR_IMPLEMENT_RESIZE(type)                                 \
     __VECTOR_IMPLEMENT_FIT(type)     
 
 #endif // __vector_h__
