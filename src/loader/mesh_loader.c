@@ -40,6 +40,8 @@ vec3_t  __parse_vec3_t(const char* token);
 vec2_t  __parse_vec2_t(const char* token);
 face_t  __parse_face_t(const char* token);
 
+bool __void_vertex_cmp(const void* v1, const void* v2);
+
 //
 
 mesh_t mesh_loader_load_from_file(const char* path) {
@@ -55,16 +57,11 @@ mesh_t mesh_loader_load_from_file(const char* path) {
 
     obj_data_t obj_data = parse_object_data(file_contents);
 
+    // generate vertices
+    
     vector_vertex_t vertices = vector_new_vertex_t(10);
-    vector_uint32_t indices  = vector_new_uint32_t(10);
 
-    vertex_map_t vertex_map  = vertex_map_new();
-
-    // generate indices
-
-    uint32_t index = 0;
-
-    for(int i = 0; i < indices.length; i++) {
+    for(int i = 0; i < obj_data.faces.length; i++) {
         face_t* face = &obj_data.faces.data[i];
 
         for(int j = 0; j < 3; j++) {
@@ -82,24 +79,55 @@ mesh_t mesh_loader_load_from_file(const char* path) {
                 .uv = uv
             };
 
-            uint32_t maybe_index = vertex_map_get(&vertex_map, vertex);
-
-            if(maybe_index == NOT_FOUND) {
-                // must insert index
-
-                vertex_map_insert(&vertex_map, vertex, index);
-                vector_append_vertex_t(&vertices, vertex);
-                vector_append_uint32_t(&indices, index);
-                index++;
-
-            } else {
-                // found
-                vector_append_uint32_t(&indices, maybe_index);
-            }
+            vector_append_vertex_t(&vertices, vertex);
         }
     }
 
-    vector_fit_vertex_t(&vertices);
+    // index vertices
+
+    vector_uint32_t indices = vector_new_uint32_t(vertices.length);
+
+    qsort(vertices.data, vertices.length, sizeof(vertex_t), __void_vertex_cmp);
+
+    uint32_t unique_index  = 0;
+
+    for(int i = 0; i < vertices.length; /* custom incremental logic*/) {
+
+        vector_append_uint32_t(&indices, unique_index++);
+
+        do {
+            i++;
+        } while(i < vertices.length && vertex_cmp(vertices.data[i], vertices.data[i - 1]));
+    }
+
+    // we have optimized indices now
+    // we must remove vertex duplicates, now
+
+    uint32_t head = 1;
+    uint32_t tail = 0;
+
+    // sanity check
+    if(vertices.length == 2 && vertex_cmp(vertices.data[0], vertices.data[1])) {
+        vector_resize_vertex_t(&vertices, 1);
+    } else {
+        while(tail < vertices.length) {
+            vertex_t a = vertices.data[head];
+            vertex_t b = vertices.data[tail];
+
+            if (!vertex_cmp(a, b)) {
+                tail++;
+
+                if(tail < vertices.length && (head - tail) > 0) {
+                    vertices.data[tail] = a;
+                }
+            }
+
+            head++;
+        }
+
+        vector_resize_vertex_t(&vertices, tail + 1);
+    }
+
     vector_fit_uint32_t(&indices);
 
     //
@@ -184,6 +212,10 @@ obj_data_t parse_object_data(char* source) {
 }
 
 // utility
+
+bool __void_vertex_cmp(const void* v1, const void* v2) {
+    return memcmp(v1, v2, sizeof(vertex_t));
+}
 
 vec3_t __parse_vec3_t(const char* token) {
     // token should be in this format
