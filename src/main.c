@@ -51,7 +51,7 @@ int main() {
     camera.near_plane = 0.1;
     camera.position = (vec3_t){0, 1, 2};
     camera.target = (vec3_t){0, 0, 0};
-    camera.projection = PROJECTION_PERSPECTIVE;
+    camera.projection = mat4_perspective(90.0, (float)WIDTH / (float)HEIGHT, 0.1, 1000.0);
 
     //
 
@@ -80,24 +80,6 @@ int main() {
     mesh_t mesh = mesh_loader_load_from_file("assets/models/cube.obj");
     mesh.material_handle = colored_material_handle;
 
-    for(int i = 0; i < mesh.vertex_count; i++) {
-        printf("v %.2f %.2f %.2f\n", mesh.vertices[i].position.x, mesh.vertices[i].position.y, mesh.vertices[i].position.z);
-    }
-
-
-    for(int i = 0; i < mesh.vertex_count; i++) {
-        printf("vn %.2f %.2f %.2f\n", mesh.vertices[i].normal.x, mesh.vertices[i].normal.y, mesh.vertices[i].normal.z);
-    }
-
-    for(int i = 0; i < mesh.vertex_count; i++) {
-        printf("vt %.2f %.2f\n", mesh.vertices[i].uv.x, mesh.vertices[i].uv.y);
-    }
-
-    for(int i = 0; i < mesh.index_count - 3; i += 3) {
-        printf("f %d %d %d\n", mesh.indices[i], mesh.indices[i + 1], mesh.indices[i + 2]);
-    }
-
-
     vertex_t vertices[] = {
         { {-0.5, -0.5, 0.0}, vec3_zero(), vec2_zero() },
         { {0.0, 0.5, 0.0},  vec3_zero(), vec2_zero() },
@@ -124,14 +106,10 @@ int main() {
     double last_time = now;
     double delta = 0.0;
 
-    double accum = 0.0;
-
     while(!glfwWindowShouldClose(renderer.window)) {
         now = glfwGetTime();
         delta = now - last_time;
         last_time = now;
-
-        accum += delta;
 
         glClear(GL_COLOR_BUFFER_BIT);
 

@@ -123,7 +123,7 @@ void __renderer_bind_material(renderer_t* renderer, program_t program, material_
 
 void renderer_render(renderer_t* renderer, scene_t* scene, camera_t* camera) {
     mat4_t view_matrix = camera_get_view_matrix(camera);
-    mat4_t perspective_matrix = mat4_identity();
+    mat4_t projection_matrix = mat4_identity();
     mat4_t model_matrix;
 
     for(int model_index = 0; model_index < scene->models.length; model_index++) {
@@ -145,7 +145,7 @@ void renderer_render(renderer_t* renderer, scene_t* scene, camera_t* camera) {
                 program, 
                 model_matrix, 
                 view_matrix, 
-                perspective_matrix
+                projection_matrix
             );
 
             glBindVertexArray(mesh->vao);

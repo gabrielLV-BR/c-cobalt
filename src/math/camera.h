@@ -4,10 +4,8 @@
 #include "vec.h"
 #include "matrix.h"
 
-enum CAMERA_PROJECTION { PROJECTION_PERSPECTIVE, PROJECTION_ORTHOGRAPHIC };
-
 typedef struct camera_t {
-    enum CAMERA_PROJECTION projection;
+    mat4_t projection;
     vec3_t position, target;
     float fov, near_plane, far_plane;
 } camera_t;

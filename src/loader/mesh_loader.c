@@ -58,8 +58,12 @@ mesh_t mesh_loader_load_from_file(const char* path) {
     obj_data_t obj_data = parse_object_data(file_contents);
 
     // generate vertices
-    
-    vector_vertex_t vertices = vector_new_vertex_t(10);
+
+    vertex_map_t vertex_map = vertex_map_new();
+    vector_vertex_t vertices = vector_new_vertex_t(obj_data.faces.length * 3);
+    vector_uint32_t indices = vector_new_uint32_t(obj_data.faces.length * 3);
+
+    uint32_t index = 0;
 
     for(int i = 0; i < obj_data.faces.length; i++) {
         face_t* face = &obj_data.faces.data[i];
@@ -79,55 +83,21 @@ mesh_t mesh_loader_load_from_file(const char* path) {
                 .uv = uv
             };
 
-            vector_append_vertex_t(&vertices, vertex);
-        }
-    }
+            uint32_t maybe_index = vertex_map_get(&vertex_map, vertex);
 
-    // index vertices
-
-    vector_uint32_t indices = vector_new_uint32_t(vertices.length);
-
-    qsort(vertices.data, vertices.length, sizeof(vertex_t), __void_vertex_cmp);
-
-    uint32_t unique_index  = 0;
-
-    for(int i = 0; i < vertices.length; /* custom incremental logic*/) {
-
-        vector_append_uint32_t(&indices, unique_index++);
-
-        do {
-            i++;
-        } while(i < vertices.length && vertex_cmp(vertices.data[i], vertices.data[i - 1]));
-    }
-
-    // we have optimized indices now
-    // we must remove vertex duplicates, now
-
-    uint32_t head = 1;
-    uint32_t tail = 0;
-
-    // sanity check
-    if(vertices.length == 2 && vertex_cmp(vertices.data[0], vertices.data[1])) {
-        vector_resize_vertex_t(&vertices, 1);
-    } else {
-        while(tail < vertices.length) {
-            vertex_t a = vertices.data[head];
-            vertex_t b = vertices.data[tail];
-
-            if (!vertex_cmp(a, b)) {
-                tail++;
-
-                if(tail < vertices.length && (head - tail) > 0) {
-                    vertices.data[tail] = a;
-                }
+            if(maybe_index == NOT_FOUND) {
+                // insert new index
+                vertex_map_insert(&vertex_map, vertex, index);
+                vector_append_vertex_t(&vertices, vertex);
+                vector_append_uint32_t(&indices, index);
+                index += 1;
+            } else {
+                vector_append_uint32_t(&indices, maybe_index);
             }
-
-            head++;
         }
-
-        vector_resize_vertex_t(&vertices, tail + 1);
     }
 
+    vector_fit_vertex_t(&vertices);
     vector_fit_uint32_t(&indices);
 
     //
